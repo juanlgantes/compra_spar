@@ -1,82 +1,67 @@
+const CACHE_NAME = 'compra-spar-v1';
+// IMPORTANTE: En GitHub Pages, la raíz es el nombre del repositorio
+const APP_PREFIX = '/compra_spar'; 
+
 const urlsToCache = [
-  './index.html',
-  './manifest.json',
-  // La CDN de Tailwind se almacenará a medida que se intercepten las llamadas
+  `${APP_PREFIX}/`,
+  `${APP_PREFIX}/index.html`,
+  `${APP_PREFIX}/manifest.json`,
+  // Añade aquí tus iconos si los tienes, ej: `${APP_PREFIX}/icon.png`
 ];
 
-// Instalar el Service Worker y almacenar recursos iniciales
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Cache abierta. Guardando Shell.');
-        return cache.addAll(urlsToCache);
-      })
-  );
-  // Fuerza al SW que espera a convertirse en el SW activo.
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('[SW] Instalando y cacheando rutas críticas');
+      return cache.addAll(urlsToCache);
+    }).catch(err => console.error('[SW] Error en install:', err))
+  );
 });
 
-// Activar y limpiar cachés antiguas
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.filter(cacheName => {
-          return cacheName !== CACHE_NAME;
-        }).map(cacheName => {
-          console.log('[SW] Borrando caché antigua:', cacheName);
-          return caches.delete(cacheName);
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('[SW] Borrando caché antigua:', cacheName);
+            return caches.delete(cacheName);
+          }
         })
       );
     })
   );
-  self.clients.claim();
+  return self.clients.claim();
 });
 
-// Interceptar peticiones de red
 self.addEventListener('fetch', event => {
+  // Solo interceptar peticiones GET
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Devuelve la respuesta cacheadita, si existe.
-        if (response) {
+    caches.match(event.request).then(cachedResponse => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      return fetch(event.request).then(response => {
+        // Si la respuesta no es válida, la devolvemos tal cual sin cachear
+        if (!response || response.status !== 200) {
           return response;
         }
 
-        // Importante: clona la solicitud original, es solo un "uso"
-        let fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then(
-          function(response) {
-            // Comprueba si la respuesta es válida
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-                // Guarda las de otras webs (CDNs Tailwind external) de todas formas (CORS opaco o basic)
-                if(response && response.type === 'opaque' && event.request.url.includes('cdn.tailwindcss')) {
-                  // Opcional, guardar si es la CDN pura
-                  let responseToCache = response.clone();
-                  caches.open(CACHE_NAME).then(function(cache) {
-                    cache.put(event.request, responseToCache);
-                  }).catch(e => console.log('No se pudo cachear cdn',e));
-                }
-              return response;
-            }
-
-            // Clona la respuesta y guárdala también en caché (estrategia Network First para nuevas cositas)
-            let responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(function(cache) {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        ).catch(error => {
-          // Si estamos Offline y la llamada a fetch falla.
-          console.log('[SW] Fetch falló (OFFLINE) para url: ', event.request.url);
-          // Opcionalmente devolver 'compra_spar.html' como fallback para peticiones de navegación genéricas
+        // Cacheamos las respuestas exitosas (incluyendo CDNs como Tailwind)
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseToCache);
         });
-      })
-    );
+
+        return response;
+      }).catch(error => {
+        console.error('[SW] Error en fetch:', error);
+        // Aquí podrías devolver un fallback offline si lo tuvieras
+      });
+    })
+  );
 });
