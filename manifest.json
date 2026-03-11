@@ -10,7 +10,7 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "./compra_spar.html",
+  "start_url": "./index.html",
   "background_color": "#ffffff",
   "display": "standalone",
   "scope": "./",

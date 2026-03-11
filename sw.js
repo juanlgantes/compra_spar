@@ -1,6 +1,5 @@
-const CACHE_NAME = 'pedido-spar-v3-0-0';
 const urlsToCache = [
-  './compra_spar.html',
+  './index.html',
   './manifest.json',
   // La CDN de Tailwind se almacenará a medida que se intercepten las llamadas
 ];
