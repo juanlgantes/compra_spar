@@ -972,15 +972,11 @@
 
         // === REGISTRO SERVICE WORKER (PWA OFFLINE-FIRST) ===
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('[PWA] ServiceWorker registrado con éxito con el scope:', registration.scope);
-                    })
-                    .catch(err => {
-                        console.error('[PWA] Fallo en el registro del ServiceWorker:', err);
-                    });
-            });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/compra_spar/service-worker.js')
+      .then(reg => console.log('SW registrado con éxito', reg))
+      .catch(err => console.error('Error al registrar SW', err));
+  });
         }
     </script>
 </body>
