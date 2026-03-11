@@ -1,0 +1,11 @@
+# Dependencias de Node
+node_modules/
+
+# Variables de entorno o configuraciones locales secretas
+.env
+.env.local
+sftp.json
+
+# Cosas de usuario
+GEMINI.md
+user/
