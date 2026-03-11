@@ -945,7 +945,7 @@
             const items = Object.values(carrito);
             if (items.length === 0) { showToast("⚠️ El carrito está vacío."); return; }
             let totalFinal = 0; items.forEach(i => totalFinal += (i.precio * i.cantidad));
-            const emailDestino = "pedidos@tu-spar.com"; const asunto = encodeURIComponent("Pedido de Compra - Spar");
+            const emailDestino = "Luisdoreste@spargrancanaria.es"; const asunto = encodeURIComponent("Pedido de Compra - Spar");
             let cuerpoCorreo = "Hola, adjunto mi pedido de compra detallado:\n\n";
             const categorias = {};
             items.forEach(item => {
