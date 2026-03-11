@@ -1,0 +1,19 @@
+{
+  "short_name": "Mi Pedido",
+  "name": "Mi Pedido Spar",
+  "description": "Aplicación web ultra-optimizada de M.P.S. con soporte Offline-First",
+  "icons": [
+    {
+      "src": "🛒", 
+      "type": "image/x-icon",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./compra_spar.html",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "./",
+  "theme_color": "#2563eb",
+  "orientation": "portrait"
+}

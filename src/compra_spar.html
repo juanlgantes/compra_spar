@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="./manifest.json">
     <title>Mi Pedido Spar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -957,6 +959,22 @@
         }
 
         window.onload = () => { actualizarBadge(); renderCatalogo(); actualizarTotal(); };
+        function generarCorreo() {
+            // (Esta función existe más abajo en el código original, aseguro no romperla agregando el registro PWA al final del body)
+        }
+
+        // === REGISTRO SERVICE WORKER (PWA OFFLINE-FIRST) ===
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('[PWA] ServiceWorker registrado con éxito con el scope:', registration.scope);
+                    })
+                    .catch(err => {
+                        console.error('[PWA] Fallo en el registro del ServiceWorker:', err);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
