@@ -966,27 +966,6 @@
             correoPendiente = { destino: emailDestino, asunto: asunto, cuerpo: encodeURIComponent(cuerpoCorreo) };
             abrirModalEnviar();
         }
-            const emailDestino = "pedidos@tu-spar.com"; const asunto = encodeURIComponent("Pedido de Compra - Spar");
-            let cuerpoCorreo = "Hola, adjunto mi pedido de compra detallado:\n\n";
-            const categorias = {};
-            items.forEach(item => {
-                if (!categorias[item.cat]) categorias[item.cat] = [];
-                categorias[item.cat].push(item);
-            });
-            for (const [cat, lista] of Object.entries(categorias)) {
-                cuerpoCorreo += `=== ${cat.toUpperCase()} ===\n`;
-                lista.forEach(i => { const txtMarca = i.marca ? ` (${i.marca})` : ''; cuerpoCorreo += `[  ] ${i.nom}${txtMarca}: ${i.cantidad} ${i.formato}\n`; });
-                cuerpoCorreo += `\n`;
-            }
-            if(notasPedido.trim() !== "") { cuerpoCorreo += "---------------------------------------\n📝 NOTAS PARA EL PREPARADOR:\n" + `${notasPedido.trim()}\n`; }
-            cuerpoCorreo += "---------------------------------------\n🛒 DATOS DEL CLIENTE Y PROMOCIONES:\n" + `Tarjeta de Socio / Cliente: ${configApp.tarjeta ? configApp.tarjeta : '(No proporcionada)'}\n`;
-            if (totalFinal >= configApp.cupon2.meta && configApp.cupon2.codigo) cuerpoCorreo += `Aplicar Cupón de Descuento (-${configApp.cupon2.descuento}€): Código ${configApp.cupon2.codigo}\n`;
-            else if (totalFinal >= configApp.cupon1.meta && configApp.cupon1.codigo) cuerpoCorreo += `Aplicar Cupón de Descuento (-${configApp.cupon1.descuento}€): Código ${configApp.cupon1.codigo}\n`;
-            else cuerpoCorreo += `Promociones: (Importe mínimo para cupones no alcanzado).\n`;
-            cuerpoCorreo += "---------------------------------------\n\nQuedo a la espera de confirmación. Gracias.";
-            correoPendiente = { destino: emailDestino, asunto: asunto, cuerpo: encodeURIComponent(cuerpoCorreo) };
-            abrirModalEnviar();
-        }
 
         window.onload = () => { actualizarBadge(); renderCatalogo(); actualizarTotal(); };
 
