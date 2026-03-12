@@ -1,632 +1,1569 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2563eb">
-    <link rel="manifest" href="./manifest.json">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#2563eb" />
+    <link rel="manifest" href="./manifest.json" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>"
+    />
     <title>Mi Pedido Spar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { -webkit-tap-highlight-color: transparent; }
-        .tab-active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 700; }
-        .tab-inactive { color: #6b7280; font-weight: 500; }
-        .animate-fade-in { animation: fadeIn 0.2s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        .progress-bar { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .modal-bg { background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); }
+      body {
+        -webkit-tap-highlight-color: transparent;
+      }
+      .tab-active {
+        border-bottom: 3px solid #2563eb;
+        color: #2563eb;
+        font-weight: 700;
+      }
+      .tab-inactive {
+        color: #6b7280;
+        font-weight: 500;
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.2s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      input[type='number']::-webkit-inner-spin-button,
+      input[type='number']::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .progress-bar {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .modal-bg {
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(3px);
+      }
     </style>
-</head>
-<body class="bg-gray-100 text-gray-800 font-sans pb-40 h-screen flex flex-col overflow-hidden">
-
+  </head>
+  <body class="bg-gray-100 text-gray-800 font-sans pb-40 h-screen flex flex-col overflow-hidden">
     <!-- HEADER GLOBAL -->
     <header class="bg-white shadow-sm z-20 flex-shrink-0">
-        <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">🛒 Mi Pedido Spar</h1>
-            <button onclick="vaciarCarrito()" class="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded shadow flex items-center gap-1 transition">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                Vaciar
-            </button>
-        </div>
-        
-        <!-- Pestañas -->
-        <div class="flex border-b border-gray-200">
-            <button onclick="switchTab('catalogo')" id="tab-catalogo" class="flex-1 py-3 text-center tab-active transition text-sm">Catálogo</button>
-            <button onclick="switchTab('favoritos')" id="tab-favoritos" class="flex-1 py-3 text-center tab-inactive transition flex justify-center items-center gap-1 text-sm">
-                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                Favoritos
-            </button>
-            <button onclick="switchTab('pedido')" id="tab-pedido" class="flex-1 py-3 text-center tab-inactive transition flex justify-center items-center gap-1 text-sm font-bold">
-                📋 Pedido (<span id="cart-badge" class="text-blue-600">0</span>)
-            </button>
-        </div>
+      <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold">🛒 Mi Pedido Spar</h1>
+        <button
+          onclick="vaciarCarrito()"
+          class="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded shadow flex items-center gap-1 transition"
+        >
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            ></path>
+          </svg>
+          Vaciar
+        </button>
+      </div>
 
-        <!-- BUSCADOR OMNIPRESENTE -->
-        <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-            <div class="relative shadow-sm rounded-xl bg-white">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </span>
-                <input type="text" id="buscador" oninput="ejecutarBusqueda()" placeholder="Buscar artículos o lotes..." class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base outline-none">
-                <button id="btn-clear-search" onclick="limpiarBusqueda()" class="absolute inset-y-0 right-0 flex items-center pr-3 hidden text-gray-400 hover:text-red-500 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
+      <!-- Pestañas -->
+      <div class="flex border-b border-gray-200">
+        <button
+          onclick="switchTab('catalogo')"
+          id="tab-catalogo"
+          class="flex-1 py-3 text-center tab-active transition text-sm"
+        >
+          Catálogo
+        </button>
+        <button
+          onclick="switchTab('favoritos')"
+          id="tab-favoritos"
+          class="flex-1 py-3 text-center tab-inactive transition flex justify-center items-center gap-1 text-sm"
+        >
+          <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+            />
+          </svg>
+          Favoritos
+        </button>
+        <button
+          onclick="switchTab('pedido')"
+          id="tab-pedido"
+          class="flex-1 py-3 text-center tab-inactive transition flex justify-center items-center gap-1 text-sm font-bold"
+        >
+          📋 Pedido (<span id="cart-badge" class="text-blue-600">0</span>)
+        </button>
+      </div>
+
+      <!-- BUSCADOR OMNIPRESENTE -->
+      <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+        <div class="relative shadow-sm rounded-xl bg-white">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
+            </svg>
+          </span>
+          <input
+            type="text"
+            id="buscador"
+            oninput="ejecutarBusqueda()"
+            placeholder="Buscar artículos o lotes..."
+            class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base outline-none"
+          />
+          <button
+            id="btn-clear-search"
+            onclick="limpiarBusqueda()"
+            class="absolute inset-y-0 right-0 flex items-center pr-3 hidden text-gray-400 hover:text-red-500 transition"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
         </div>
+      </div>
     </header>
 
     <!-- MAIN SCROLLABLE AREA -->
     <main class="flex-1 overflow-y-auto relative bg-gray-50" id="main-content">
-        
-        <!-- VISTA: CATÁLOGO -->
-        <div id="view-catalogo" class="p-4 animate-fade-in block">
-            <div class="mb-2">
-                <button onclick="abrirModalNuevoArticulo()" class="w-full bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-bold py-2.5 rounded-xl shadow-sm transition flex justify-center items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Añadir Nuevo a la Base de Datos
-                </button>
-            </div>
-            <div id="catalogo-container"></div>
+      <!-- VISTA: CATÁLOGO -->
+      <div id="view-catalogo" class="p-4 animate-fade-in block">
+        <div class="mb-2">
+          <button
+            onclick="abrirModalNuevoArticulo()"
+            class="w-full bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-bold py-2.5 rounded-xl shadow-sm transition flex justify-center items-center gap-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Añadir Nuevo a la Base de Datos
+          </button>
+        </div>
+        <div id="catalogo-container"></div>
+      </div>
+
+      <!-- VISTA: FAVORITOS -->
+      <div id="view-favoritos" class="p-4 animate-fade-in hidden">
+        <div id="favoritos-lotes-container" class="mb-6"></div>
+        <div id="favoritos-container"></div>
+      </div>
+
+      <!-- VISTA: PEDIDO -->
+      <div id="view-pedido" class="p-4 animate-fade-in hidden">
+        <div class="mb-4 space-y-3">
+          <!-- BOTÓN AÑADIR AL VUELO -->
+          <button
+            onclick="abrirModalNuevoArticulo()"
+            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-md transition flex justify-center items-center gap-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              ></path>
+            </svg>
+            Añadir Artículo Rápido al Pedido
+          </button>
+
+          <div class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-200">
+            <span class="text-sm font-bold text-gray-700">Opciones del Lote</span>
+            <button
+              onclick="guardarComoLote()"
+              class="text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold px-3 py-2 rounded-lg flex items-center transition"
+            >
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                ></path>
+              </svg>
+              Guardar como Lote
+            </button>
+          </div>
+
+          <div class="bg-yellow-50 p-3 rounded-xl shadow-sm border border-yellow-200">
+            <label class="block text-sm font-bold text-yellow-800 mb-1 flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                ></path>
+              </svg>
+              Notas del Pedido
+            </label>
+            <textarea
+              id="input-notas"
+              onchange="guardarNotas()"
+              class="w-full bg-white border border-yellow-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-yellow-500 outline-none resize-none"
+              rows="2"
+              placeholder="Instrucciones para el preparador del supermercado..."
+            ></textarea>
+          </div>
         </div>
 
-        <!-- VISTA: FAVORITOS -->
-        <div id="view-favoritos" class="p-4 animate-fade-in hidden">
-            <div id="favoritos-lotes-container" class="mb-6"></div>
-            <div id="favoritos-container"></div>
-        </div>
-
-        <!-- VISTA: PEDIDO -->
-        <div id="view-pedido" class="p-4 animate-fade-in hidden">
-            <div class="mb-4 space-y-3">
-                <!-- BOTÓN AÑADIR AL VUELO -->
-                <button onclick="abrirModalNuevoArticulo()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-md transition flex justify-center items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    Añadir Artículo Rápido al Pedido
-                </button>
-
-                <div class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-200">
-                    <span class="text-sm font-bold text-gray-700">Opciones del Lote</span>
-                    <button onclick="guardarComoLote()" class="text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold px-3 py-2 rounded-lg flex items-center transition">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                        Guardar como Lote
-                    </button>
-                </div>
-
-                <div class="bg-yellow-50 p-3 rounded-xl shadow-sm border border-yellow-200">
-                    <label class="block text-sm font-bold text-yellow-800 mb-1 flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        Notas del Pedido
-                    </label>
-                    <textarea id="input-notas" onchange="guardarNotas()" class="w-full bg-white border border-yellow-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-yellow-500 outline-none resize-none" rows="2" placeholder="Instrucciones para el preparador del supermercado..."></textarea>
-                </div>
-            </div>
-            
-            <div id="pedido-container" class="space-y-3 pb-6"></div>
-        </div>
+        <div id="pedido-container" class="space-y-3 pb-6"></div>
+      </div>
     </main>
 
     <!-- FOOTER FIJO (MOTOR DE CUPONES) -->
-    <div id="footer-pedido" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] hidden z-30">
-        <div class="mb-3 bg-gray-50 p-2 rounded-lg border border-gray-200 relative">
-            <button onclick="abrirModalConfig()" class="absolute right-2 top-2 p-1.5 text-gray-500 hover:text-blue-600 bg-white rounded shadow-sm border border-gray-200 z-10 transition active:bg-gray-100">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            </button>
-            <div class="flex justify-between items-end mb-1 pr-10">
-                <span id="progreso-premio" class="text-xs font-medium text-blue-600">Calculando...</span>
-                <span id="progreso-texto" class="text-xs font-bold text-gray-700">0.00€</span>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-2.5 relative mt-1">
-                <div id="marca-nivel-1" class="absolute top-0 bottom-0 border-l-2 border-white z-10" style="left: 0%;"></div>
-                <div id="progreso-barra" class="bg-blue-500 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
-            </div>
-            <div class="flex justify-between text-[10px] text-gray-500 mt-1 px-1 font-medium">
-                <span>0€</span>
-                <span id="texto-nivel-1" class="text-blue-500">25€ (-2€)</span>
-                <span id="texto-nivel-2" class="text-green-600">85€ (-7€)</span>
-            </div>
-        </div>
-        <div class="flex justify-between items-center mb-3">
-            <span class="text-gray-600 font-bold">TOTAL ESTIMADO:</span>
-            <span class="text-2xl font-black text-gray-800" id="precio-total">0.00 €</span>
-        </div>
-        <button onclick="generarCorreo()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg flex justify-center items-center space-x-2 active:bg-blue-800 transition text-lg">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            <span>Enviar Pedido</span>
+    <div
+      id="footer-pedido"
+      class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] hidden z-30"
+    >
+      <div class="mb-3 bg-gray-50 p-2 rounded-lg border border-gray-200 relative">
+        <button
+          onclick="abrirModalConfig()"
+          class="absolute right-2 top-2 p-1.5 text-gray-500 hover:text-blue-600 bg-white rounded shadow-sm border border-gray-200 z-10 transition active:bg-gray-100"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            ></path>
+          </svg>
         </button>
+        <div class="flex justify-between items-end mb-1 pr-10">
+          <span id="progreso-premio" class="text-xs font-medium text-blue-600">Calculando...</span>
+          <span id="progreso-texto" class="text-xs font-bold text-gray-700">0.00€</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5 relative mt-1">
+          <div id="marca-nivel-1" class="absolute top-0 bottom-0 border-l-2 border-white z-10" style="left: 0%"></div>
+          <div id="progreso-barra" class="bg-blue-500 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-gray-500 mt-1 px-1 font-medium">
+          <span>0€</span>
+          <span id="texto-nivel-1" class="text-blue-500">25€ (-2€)</span>
+          <span id="texto-nivel-2" class="text-green-600">85€ (-7€)</span>
+        </div>
+      </div>
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-gray-600 font-bold">TOTAL ESTIMADO:</span>
+        <span class="text-2xl font-black text-gray-800" id="precio-total">0.00 €</span>
+      </div>
+      <button
+        onclick="generarCorreo()"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg flex justify-center items-center space-x-2 active:bg-blue-800 transition text-lg"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+          ></path>
+        </svg>
+        <span>Enviar Pedido</span>
+      </button>
     </div>
 
     <!-- UI MODAL GENÉRICO -->
-    <div id="modal-ui" class="fixed inset-0 modal-bg z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-        <div class="bg-white rounded-xl p-5 w-11/12 max-w-sm mx-auto shadow-2xl transform scale-95 transition-transform duration-200" id="modal-ui-content">
-            <h3 id="modal-ui-title" class="font-bold text-gray-800 text-lg mb-2">Atención</h3>
-            <p id="modal-ui-msg" class="text-sm text-gray-600 mb-4"></p>
-            <input type="text" id="modal-ui-input" class="hidden w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
-            <div class="flex space-x-3">
-                <button onclick="cerrarModalUI()" class="flex-1 bg-gray-200 text-gray-800 font-bold py-2 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
-                <button id="modal-ui-btn-confirm" class="flex-1 bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition">Aceptar</button>
-            </div>
+    <div
+      id="modal-ui"
+      class="fixed inset-0 modal-bg z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-200"
+    >
+      <div
+        class="bg-white rounded-xl p-5 w-11/12 max-w-sm mx-auto shadow-2xl transform scale-95 transition-transform duration-200"
+        id="modal-ui-content"
+      >
+        <h3 id="modal-ui-title" class="font-bold text-gray-800 text-lg mb-2">Atención</h3>
+        <p id="modal-ui-msg" class="text-sm text-gray-600 mb-4"></p>
+        <input
+          type="text"
+          id="modal-ui-input"
+          class="hidden w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-blue-500 outline-none"
+        />
+        <div class="flex space-x-3">
+          <button
+            onclick="cerrarModalUI()"
+            class="flex-1 bg-gray-200 text-gray-800 font-bold py-2 rounded-lg hover:bg-gray-300 transition"
+          >
+            Cancelar
+          </button>
+          <button
+            id="modal-ui-btn-confirm"
+            class="flex-1 bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            Aceptar
+          </button>
         </div>
+      </div>
     </div>
 
     <!-- MODAL SELECCIÓN ENVÍO -->
-    <div id="modal-enviar" class="fixed inset-0 modal-bg z-[70] flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-sm mx-auto transform scale-95 transition-transform duration-200 flex flex-col" id="modal-enviar-content">
-            <div class="p-4 border-b border-gray-200 bg-blue-50 rounded-t-xl flex justify-between items-center">
-                <h3 class="text-lg font-bold text-blue-800">✉️ Enviar Pedido</h3>
-                <button onclick="cerrarModalEnviar()" class="text-gray-500 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            </div>
-            <div class="p-5 space-y-3">
-                <p class="text-sm text-gray-600 mb-2">Elige cómo prefieres enviar o guardar tu pedido:</p>
-                <button onclick="enviarPorApp()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg border border-gray-300 transition flex items-center justify-center gap-2 shadow-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    App de Correo (Móvil)
-                </button>
-                <button onclick="enviarPorGmailWeb()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 px-4 rounded-lg border border-red-200 transition flex items-center justify-center gap-2 shadow-sm">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
-                    Gmail Web (PC)
-                </button>
-                <div class="border-t border-gray-200 my-2 pt-2"></div>
-                <button onclick="copiarComoTabla()" class="w-full bg-green-50 hover:bg-green-100 text-green-700 font-bold py-3 px-4 rounded-lg border border-green-200 transition flex items-center justify-center gap-2 shadow-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                    Copiar como Tabla (Portapapeles)
-                </button>
-            </div>
+    <div
+      id="modal-enviar"
+      class="fixed inset-0 modal-bg z-[70] flex items-center justify-center hidden opacity-0 transition-opacity duration-200"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl w-11/12 max-w-sm mx-auto transform scale-95 transition-transform duration-200 flex flex-col"
+        id="modal-enviar-content"
+      >
+        <div class="p-4 border-b border-gray-200 bg-blue-50 rounded-t-xl flex justify-between items-center">
+          <h3 class="text-lg font-bold text-blue-800">✉️ Enviar Pedido</h3>
+          <button onclick="cerrarModalEnviar()" class="text-gray-500 hover:text-red-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
         </div>
+        <div class="p-5 space-y-3">
+          <p class="text-sm text-gray-600 mb-2">Elige cómo prefieres enviar o guardar tu pedido:</p>
+          <button
+            onclick="enviarPorApp()"
+            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg border border-gray-300 transition flex items-center justify-center gap-2 shadow-sm"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              ></path>
+            </svg>
+            App de Correo (Móvil)
+          </button>
+          <button
+            onclick="enviarPorGmailWeb()"
+            class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 px-4 rounded-lg border border-red-200 transition flex items-center justify-center gap-2 shadow-sm"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"
+              />
+            </svg>
+            Gmail Web (PC)
+          </button>
+          <div class="border-t border-gray-200 my-2 pt-2"></div>
+          <button
+            onclick="copiarComoTabla()"
+            class="w-full bg-green-50 hover:bg-green-100 text-green-700 font-bold py-3 px-4 rounded-lg border border-green-200 transition flex items-center justify-center gap-2 shadow-sm"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              ></path>
+            </svg>
+            Copiar como Tabla (Portapapeles)
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- MODAL NUEVO ARTÍCULO -->
-    <div id="modal-nuevo-articulo" class="fixed inset-0 modal-bg z-[55] flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md mx-auto transform scale-95 transition-transform duration-200 flex flex-col max-h-[90vh]" id="modal-nuevo-articulo-content">
-            <div class="p-4 border-b border-gray-200 bg-green-50 rounded-t-xl flex justify-between items-center">
-                <h3 class="text-lg font-bold text-green-800">➕ Crear Artículo Nuevo</h3>
-                <button onclick="cerrarModalNuevoArticulo()" class="text-gray-500 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            </div>
-            
-            <div class="p-5 overflow-y-auto space-y-4">
-                <p class="text-xs text-gray-500 mb-2">Este producto se guardará en tu base de datos y se añadirá directamente a tu carrito si estás haciendo un pedido.</p>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre del producto *</label>
-                    <input type="text" id="nuevo-nom" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none" placeholder="Ej: Chorizo de pavo">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Categoría / Pasillo *</label>
-                    <select id="nuevo-cat" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none bg-white">
-                        <option value="🍎 Frutas y Verduras">🍎 Frutas y Verduras</option>
-                        <option value="🥩 Carnicería y Pescadería">🥩 Carnicería y Pescadería</option>
-                        <option value="🥚 Lácteos y Huevos">🥚 Lácteos y Huevos</option>
-                        <option value="🥫 Despensa">🥫 Despensa</option>
-                        <option value="❄️ Congelados y Bebidas">❄️ Congelados y Bebidas</option>
-                        <option value="🧽 Limpieza e Higiene">🧽 Limpieza e Higiene</option>
-                        <option value="📦 Otros">📦 Otros (Miscelánea)</option>
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Marca (Opc.)</label>
-                        <input type="text" id="nuevo-marca" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none" placeholder="Ej: Campofrio">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Formato</label>
-                        <input type="text" id="nuevo-formato" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none" placeholder="Ej: 200g">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Precio est. (€) (Opc.)</label>
-                    <input type="number" step="0.01" id="nuevo-precio" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none" placeholder="Ej: 2.50">
-                </div>
-            </div>
-
-            <div class="p-4 border-t border-gray-200 bg-white rounded-b-xl">
-                <button onclick="guardarNuevoArticulo()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition shadow">Añadir al Pedido y Guardar</button>
-            </div>
+    <div
+      id="modal-nuevo-articulo"
+      class="fixed inset-0 modal-bg z-[55] flex items-center justify-center hidden opacity-0 transition-opacity duration-200"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md mx-auto transform scale-95 transition-transform duration-200 flex flex-col max-h-[90vh]"
+        id="modal-nuevo-articulo-content"
+      >
+        <div class="p-4 border-b border-gray-200 bg-green-50 rounded-t-xl flex justify-between items-center">
+          <h3 class="text-lg font-bold text-green-800">➕ Crear Artículo Nuevo</h3>
+          <button onclick="cerrarModalNuevoArticulo()" class="text-gray-500 hover:text-red-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
         </div>
+
+        <div class="p-5 overflow-y-auto space-y-4">
+          <p class="text-xs text-gray-500 mb-2">
+            Este producto se guardará en tu base de datos y se añadirá directamente a tu carrito si estás haciendo un
+            pedido.
+          </p>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Nombre del producto *</label>
+            <input
+              type="text"
+              id="nuevo-nom"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
+              placeholder="Ej: Chorizo de pavo"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Categoría / Pasillo *</label>
+            <select
+              id="nuevo-cat"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none bg-white"
+            >
+              <option value="🍎 Frutas y Verduras">🍎 Frutas y Verduras</option>
+              <option value="🥩 Carnicería y Pescadería">🥩 Carnicería y Pescadería</option>
+              <option value="🥚 Lácteos y Huevos">🥚 Lácteos y Huevos</option>
+              <option value="🥫 Despensa">🥫 Despensa</option>
+              <option value="❄️ Congelados y Bebidas">❄️ Congelados y Bebidas</option>
+              <option value="🧽 Limpieza e Higiene">🧽 Limpieza e Higiene</option>
+              <option value="📦 Otros">📦 Otros (Miscelánea)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-1">Marca (Opc.)</label>
+              <input
+                type="text"
+                id="nuevo-marca"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
+                placeholder="Ej: Campofrio"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-gray-700 mb-1">Formato</label>
+              <input
+                type="text"
+                id="nuevo-formato"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
+                placeholder="Ej: 200g"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Precio est. (€) (Opc.)</label>
+            <input
+              type="number"
+              step="0.01"
+              id="nuevo-precio"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
+              placeholder="Ej: 2.50"
+            />
+          </div>
+        </div>
+
+        <div class="p-4 border-t border-gray-200 bg-white rounded-b-xl">
+          <button
+            onclick="guardarNuevoArticulo()"
+            class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition shadow"
+          >
+            Añadir al Pedido y Guardar
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- MODAL DE CONFIGURACIÓN -->
-    <div id="modal-config" class="fixed inset-0 modal-bg z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md mx-auto transform scale-95 transition-transform duration-200 flex flex-col max-h-[90vh]" id="modal-config-content">
-            <div class="p-4 border-b border-gray-200 bg-gray-50 rounded-t-xl flex justify-between items-center">
-                <h3 class="text-lg font-bold text-gray-800">⚙️ Configuración</h3>
-                <button onclick="cerrarModalConfig()" class="text-gray-500 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            </div>
-            <div class="p-5 overflow-y-auto space-y-6">
-                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                    <label class="block text-sm font-bold text-blue-800 mb-1">💳 Tarjeta Socio</label>
-                    <input type="text" id="input-tarjeta" class="w-full border border-blue-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div class="border border-gray-200 p-3 rounded-lg">
-                    <label class="block text-sm font-bold text-gray-700 mb-2 border-b pb-1">🎟️ Cupón Nivel 1</label>
-                    <div class="grid grid-cols-2 gap-3 mb-2">
-                        <div><span class="text-xs text-gray-500">Meta (€)</span><input type="number" id="input-meta1" class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"></div>
-                        <div><span class="text-xs text-gray-500">Dto (€)</span><input type="number" id="input-dto1" class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"></div>
-                    </div>
-                    <div><span class="text-xs text-gray-500">Código</span><input type="text" id="input-cod1" class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"></div>
-                </div>
-                <div class="border border-gray-200 p-3 rounded-lg">
-                    <label class="block text-sm font-bold text-gray-700 mb-2 border-b pb-1">🏆 Cupón Nivel 2</label>
-                    <div class="grid grid-cols-2 gap-3 mb-2">
-                        <div><span class="text-xs text-gray-500">Meta (€)</span><input type="number" id="input-meta2" class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"></div>
-                        <div><span class="text-xs text-gray-500">Dto (€)</span><input type="number" id="input-dto2" class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"></div>
-                    </div>
-                    <div><span class="text-xs text-gray-500">Código</span><input type="text" id="input-cod2" class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"></div>
-                </div>
-            </div>
-            <div class="p-4 border-t border-gray-200 bg-white rounded-b-xl">
-                <button onclick="guardarConfiguracion()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 shadow">Guardar</button>
-            </div>
+    <div
+      id="modal-config"
+      class="fixed inset-0 modal-bg z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md mx-auto transform scale-95 transition-transform duration-200 flex flex-col max-h-[90vh]"
+        id="modal-config-content"
+      >
+        <div class="p-4 border-b border-gray-200 bg-gray-50 rounded-t-xl flex justify-between items-center">
+          <h3 class="text-lg font-bold text-gray-800">⚙️ Configuración</h3>
+          <button onclick="cerrarModalConfig()" class="text-gray-500 hover:text-red-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
         </div>
+        <div class="p-5 overflow-y-auto space-y-6">
+          <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+            <label class="block text-sm font-bold text-blue-800 mb-1">💳 Tarjeta Socio</label>
+            <input
+              type="text"
+              id="input-tarjeta"
+              class="w-full border border-blue-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div class="border border-gray-200 p-3 rounded-lg">
+            <label class="block text-sm font-bold text-gray-700 mb-2 border-b pb-1">🎟️ Cupón Nivel 1</label>
+            <div class="grid grid-cols-2 gap-3 mb-2">
+              <div>
+                <span class="text-xs text-gray-500">Meta (€)</span
+                ><input
+                  type="number"
+                  id="input-meta1"
+                  class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"
+                />
+              </div>
+              <div>
+                <span class="text-xs text-gray-500">Dto (€)</span
+                ><input
+                  type="number"
+                  id="input-dto1"
+                  class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <span class="text-xs text-gray-500">Código</span
+              ><input
+                type="text"
+                id="input-cod1"
+                class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"
+              />
+            </div>
+          </div>
+          <div class="border border-gray-200 p-3 rounded-lg">
+            <label class="block text-sm font-bold text-gray-700 mb-2 border-b pb-1">🏆 Cupón Nivel 2</label>
+            <div class="grid grid-cols-2 gap-3 mb-2">
+              <div>
+                <span class="text-xs text-gray-500">Meta (€)</span
+                ><input
+                  type="number"
+                  id="input-meta2"
+                  class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"
+                />
+              </div>
+              <div>
+                <span class="text-xs text-gray-500">Dto (€)</span
+                ><input
+                  type="number"
+                  id="input-dto2"
+                  class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <span class="text-xs text-gray-500">Código</span
+              ><input
+                type="text"
+                id="input-cod2"
+                class="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-gray-200 bg-white rounded-b-xl">
+          <button
+            onclick="guardarConfiguracion()"
+            class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 shadow"
+          >
+            Guardar
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- TOAST -->
-    <div id="toast" class="fixed bottom-28 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-sm font-bold px-6 py-3 rounded-full shadow-xl transition-opacity duration-300 opacity-0 pointer-events-none z-50 whitespace-nowrap">Mensaje</div>
+    <div
+      id="toast"
+      class="fixed bottom-28 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-sm font-bold px-6 py-3 rounded-full shadow-xl transition-opacity duration-300 opacity-0 pointer-events-none z-50 whitespace-nowrap"
+    >
+      Mensaje
+    </div>
 
     <script>
-        // === BASE DE DATOS MAESTRA ===
-        const inventarioFijo = [
-            { id: 'fv1', cat: '🍎 Frutas y Verduras', nom: 'Fresas del País', marca: '', formato: '250 g', precioBase: 2.15 },
-            { id: 'fv2', cat: '🍎 Frutas y Verduras', nom: 'Aguacate Fuerte', marca: '', formato: 'Granel', precioBase: 0.95 },
-            { id: 'fv3', cat: '🍎 Frutas y Verduras', nom: 'Arándanos', marca: '', formato: 'cajita', precioBase: 1.80 },
-            { id: 'fv4', cat: '🍎 Frutas y Verduras', nom: 'Plátanos', marca: '', formato: 'unidades', precioBase: 0.35 },
-            { id: 'fv5', cat: '🍎 Frutas y Verduras', nom: 'Manzana Pink Lady', marca: 'Pink Lady', formato: 'Granel', precioBase: 0.75 },
-            { id: 'fv6', cat: '🍎 Frutas y Verduras', nom: 'Papaya Extra', marca: '', formato: 'Granel', precioBase: 2.50 },
-            { id: 'fv7', cat: '🍎 Frutas y Verduras', nom: 'Pera Conference', marca: '', formato: 'Granel', precioBase: 0.40 },
-            { id: 'fv8', cat: '🍎 Frutas y Verduras', nom: 'Calabacinos', marca: '', formato: 'Granel', precioBase: 0.45 },
-            { id: 'fv9', cat: '🍎 Frutas y Verduras', nom: 'Tomates grandes maduros', marca: '', formato: 'unidades', precioBase: 0.60 },
-            { id: 'fv10', cat: '🍎 Frutas y Verduras', nom: 'Tomates cherry', marca: '', formato: 'paquete', precioBase: 1.50 },
-            { id: 'fv11', cat: '🍎 Frutas y Verduras', nom: 'Tomates maduros para salsa', marca: '', formato: 'kg', precioBase: 1.89 },
-            { id: 'fv12', cat: '🍎 Frutas y Verduras', nom: 'Papas del País Ojo Rosado', marca: '', formato: 'Granel', precioBase: 0.25 },
-            { id: 'fv13', cat: '🍎 Frutas y Verduras', nom: 'Batata Blanca', marca: '', formato: 'Granel', precioBase: 0.80 },
-            { id: 'fv14', cat: '🍎 Frutas y Verduras', nom: 'Zanahoria País', marca: '', formato: 'Granel', precioBase: 0.15 },
-            { id: 'fv15', cat: '🍎 Frutas y Verduras', nom: 'Calabaza', marca: '', formato: '0.3 kg', precioBase: 1.20 },
-            { id: 'fv16', cat: '🍎 Frutas y Verduras', nom: 'Champiñón Cortado', marca: '', formato: 'Bandeja 250 g', precioBase: 1.65 },
-            { id: 'fv17', cat: '🍎 Frutas y Verduras', nom: 'Espinacas frescas', marca: '', formato: 'manojos', precioBase: 1.10 },
-            { id: 'fv18', cat: '🍎 Frutas y Verduras', nom: 'Bolsa de ensalada', marca: '', formato: 'unidades', precioBase: 1.99 },
-            { id: 'fv_mezclum', cat: '🍎 Frutas y Verduras', nom: 'Ensalada mezclum', marca: 'Florette', formato: 'bolsa', precioBase: 1.99 },
-            { id: 'fv19', cat: '🍎 Frutas y Verduras', nom: 'Ajo (Normal / Negro)', marca: '', formato: 'dientes', precioBase: 0.20 },
-            { id: 'fv20', cat: '🍎 Frutas y Verduras', nom: 'Cebolla blanca', marca: '', formato: 'unidades', precioBase: 0.30 },
-            { id: 'fv21', cat: '🍎 Frutas y Verduras', nom: 'Limón', marca: '', formato: 'unidad', precioBase: 0.35 },
-            { id: 'fv22', cat: '🍎 Frutas y Verduras', nom: 'Pepino', marca: '', formato: 'unidad', precioBase: 0.60 },
-            
-            { id: 'lh1', cat: '🥚 Lácteos y Huevos', nom: 'Queso Castillo gouda sin lactosa', marca: 'Castillo', formato: 'paquetes', precioBase: 2.75 },
-            { id: 'lh2', cat: '🥚 Lácteos y Huevos', nom: 'Queso fresco pajonales cabra', marca: '', formato: 'unidad', precioBase: 3.10 },
-            { id: 'lh3', cat: '🥚 Lácteos y Huevos', nom: 'Queso tierno cabra', marca: '', formato: 'unidad', precioBase: 4.50 },
-            { id: 'lh4', cat: '🥚 Lácteos y Huevos', nom: 'Queso Babybel', marca: '', formato: 'unidad', precioBase: 3.20 },
-            { id: 'lh5', cat: '🥚 Lácteos y Huevos', nom: 'Palitos La Vaca que Ríe', marca: '', formato: 'unidad', precioBase: 2.15 },
-            { id: 'lh6', cat: '🥚 Lácteos y Huevos', nom: 'Yogur Danone natural 4x120 g', marca: 'Danone', formato: 'packs 4 ud', precioBase: 1.85 },
-            { id: 'lh7', cat: '🥚 Lácteos y Huevos', nom: 'Yogur Griego Natural', marca: 'Danone', formato: 'packs 4x115gr', precioBase: 1.85 },
-            { id: 'lh8', cat: '🥚 Lácteos y Huevos', nom: 'Actimel', marca: '', formato: 'paquete', precioBase: 2.99 },
-            { id: 'lh9', cat: '🥚 Lácteos y Huevos', nom: 'Actif Kaiku bebible fresa', marca: 'Kaiku', formato: '6x65 ml', precioBase: 2.50 },
-            { id: 'lh10', cat: '🥚 Lácteos y Huevos', nom: 'Leche La Irlandesa entera 1 L', marca: 'La Irlandesa', formato: 'unidades', precioBase: 1.15 },
-            { id: 'lh11', cat: '🥚 Lácteos y Huevos', nom: 'Leche Puleva entera sin lactosa 1 L', marca: 'Puleva', formato: 'unidades', precioBase: 1.25 },
-            { id: 'lh12', cat: '🥚 Lácteos y Huevos', nom: 'Huevos camperos M (6 ud)', marca: 'La Sombra', formato: 'cajas', precioBase: 1.95 },
-            { id: 'lh13', cat: '🥚 Lácteos y Huevos', nom: 'Mantequilla premium', marca: 'Irlandesa', formato: 'unidad', precioBase: 2.80 },
-            { id: 'lh14', cat: '🥚 Lácteos y Huevos', nom: 'Margarina', marca: 'Proactiv / Flora', formato: 'unidad', precioBase: 3.10 },
-            
-            { id: 'cp1', cat: '🥩 Carnicería y Pescadería', nom: 'Carne picada de primera', marca: '', formato: '300 g', precioBase: 4.50 },
-            { id: 'cp2', cat: '🥩 Carnicería y Pescadería', nom: 'Pechuga de pollo amarillo', marca: '', formato: '0.2 kg', precioBase: 3.90 },
-            { id: 'cp3', cat: '🥩 Carnicería y Pescadería', nom: 'Pechuga de pavo fresca al vacío en tacos', marca: '', formato: '0.3 kg', precioBase: 4.10 },
-            { id: 'cp4', cat: '🥩 Carnicería y Pescadería', nom: 'Cinta de lomo', marca: '', formato: 'filetes', precioBase: 3.50 },
-            { id: 'cp5', cat: '🥩 Carnicería y Pescadería', nom: 'Centro Jamón cebo ibérico 50%', marca: 'Azuaga', formato: '100g', precioBase: 6.00 },
-            { id: 'cp6', cat: '🥩 Carnicería y Pescadería', nom: 'Pechuga de pavo NaturArte G. Reserva', marca: 'Campofrío', formato: '0.1 kg', precioBase: 2.50 },
-            { id: 'cp7', cat: '🥩 Carnicería y Pescadería', nom: 'Mortadela', marca: 'Citerio', formato: '100g', precioBase: 1.90 },
-            { id: 'cp8', cat: '🥩 Carnicería y Pescadería', nom: 'Corazones de Merluza sin piel', marca: 'Pescanova', formato: 'paquete 500gr', precioBase: 5.95 },
-            
-            { id: 'dp1', cat: '🥫 Despensa', nom: 'Aceitunas negras/verdes', marca: 'Spar', formato: 'unidad', precioBase: 1.10 },
-            { id: 'dp3', cat: '🥫 Despensa', nom: 'Arroz basmati brajma 1kg', marca: 'Brillante', formato: 'unidades', precioBase: 2.25 },
-            { id: 'dp4', cat: '🥫 Despensa', nom: 'Sal rosa del himalaya 250gr', marca: 'Deleitum', formato: 'unidades', precioBase: 1.85 },
-            { id: 'dp5', cat: '🥫 Despensa', nom: 'Macarrones / Tornillos / Espagueti', marca: 'La Isleña', formato: 'unidades', precioBase: 1.05 },
-            { id: 'dp7', cat: '🥫 Despensa', nom: 'Cous cous 500gr', marca: 'La Isleña', formato: 'unidades', precioBase: 1.60 },
-            { id: 'dp8', cat: '🥫 Despensa', nom: 'Aceite de oliva suave para cocinar', marca: 'Ybarra / Carbonell', formato: 'botellas', precioBase: 7.95 },
-            { id: 'dp10', cat: '🥫 Despensa', nom: 'Pan de molde Integral Artesanal', marca: 'Panrico', formato: 'unidades', precioBase: 2.45 },
-            { id: 'dp11', cat: '🥫 Despensa', nom: 'Pan artesanal hogaza', marca: 'Rustik Bakery', formato: 'unidades', precioBase: 2.15 },
-            { id: 'dp12', cat: '🥫 Despensa', nom: 'Pan de leche', marca: 'La Bella Easo', formato: 'paquetes', precioBase: 1.85 },
-            { id: 'dp13', cat: '🥫 Despensa', nom: 'Galletas chocolate mini', marca: 'Chips Ahoy', formato: 'paquetes', precioBase: 1.99 },
-            { id: 'dp14', cat: '🥫 Despensa', nom: 'Galleta acarameladas 250gr', marca: 'Lotus', formato: 'paquetes', precioBase: 2.10 },
-            { id: 'dp15', cat: '🥫 Despensa', nom: 'Galletas María Oro 600gr', marca: 'Cuétara', formato: 'paquetes', precioBase: 2.85 },
-            { id: 'dp22', cat: '🥫 Despensa', nom: 'Lentejas / Garbanzos', marca: '', formato: 'paquetes', precioBase: 1.10 },
-            { id: 'dp24', cat: '🥫 Despensa', nom: 'Bote espárragos de navarra', marca: '', formato: 'botes', precioBase: 3.50 },
-            { id: 'dp26', cat: '🥫 Despensa', nom: 'Tofu natural 200gr', marca: 'Rikissimo', formato: 'unidades', precioBase: 1.80 },
-            { id: 'dp27', cat: '🥫 Despensa', nom: 'Ketchup', marca: 'Heinz', formato: 'botes', precioBase: 2.50 },
-            { id: 'dp28', cat: '🥫 Despensa', nom: 'Mayonesa', marca: 'Hellmanns', formato: 'botes', precioBase: 2.95 },
-            { id: 'dp30', cat: '🥫 Despensa', nom: 'Tarritos fruta bebé / Hero', marca: 'Hero Baby', formato: 'packs', precioBase: 3.15 },
-            { id: 'dp31', cat: '🥫 Despensa', nom: 'Salvado De Avena crujiente', marca: 'Naturtierra', formato: 'bolsa', precioBase: 1.95 },
-            { id: 'dp_crack', cat: '🥫 Despensa', nom: 'Crackers', marca: 'Jacobson', formato: 'paquetes', precioBase: 1.50 },
+      // === BASE DE DATOS MAESTRA ===
+      const inventarioFijo = [
+        {
+          id: 'fv1',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Fresas del País',
+          marca: '',
+          formato: '250 g',
+          precioBase: 2.15,
+        },
+        {
+          id: 'fv2',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Aguacate Fuerte',
+          marca: '',
+          formato: 'Granel',
+          precioBase: 0.95,
+        },
+        { id: 'fv3', cat: '🍎 Frutas y Verduras', nom: 'Arándanos', marca: '', formato: 'cajita', precioBase: 1.8 },
+        { id: 'fv4', cat: '🍎 Frutas y Verduras', nom: 'Plátanos', marca: '', formato: 'unidades', precioBase: 0.35 },
+        {
+          id: 'fv5',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Manzana Pink Lady',
+          marca: 'Pink Lady',
+          formato: 'Granel',
+          precioBase: 0.75,
+        },
+        { id: 'fv6', cat: '🍎 Frutas y Verduras', nom: 'Papaya Extra', marca: '', formato: 'Granel', precioBase: 2.5 },
+        {
+          id: 'fv7',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Pera Conference',
+          marca: '',
+          formato: 'Granel',
+          precioBase: 0.4,
+        },
+        { id: 'fv8', cat: '🍎 Frutas y Verduras', nom: 'Calabacinos', marca: '', formato: 'Granel', precioBase: 0.45 },
+        {
+          id: 'fv9',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Tomates grandes maduros',
+          marca: '',
+          formato: 'unidades',
+          precioBase: 0.6,
+        },
+        {
+          id: 'fv10',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Tomates cherry',
+          marca: '',
+          formato: 'paquete',
+          precioBase: 1.5,
+        },
+        {
+          id: 'fv11',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Tomates maduros para salsa',
+          marca: '',
+          formato: 'kg',
+          precioBase: 1.89,
+        },
+        {
+          id: 'fv12',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Papas del País Ojo Rosado',
+          marca: '',
+          formato: 'Granel',
+          precioBase: 0.25,
+        },
+        {
+          id: 'fv13',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Batata Blanca',
+          marca: '',
+          formato: 'Granel',
+          precioBase: 0.8,
+        },
+        {
+          id: 'fv14',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Zanahoria País',
+          marca: '',
+          formato: 'Granel',
+          precioBase: 0.15,
+        },
+        { id: 'fv15', cat: '🍎 Frutas y Verduras', nom: 'Calabaza', marca: '', formato: '0.3 kg', precioBase: 1.2 },
+        {
+          id: 'fv16',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Champiñón Cortado',
+          marca: '',
+          formato: 'Bandeja 250 g',
+          precioBase: 1.65,
+        },
+        {
+          id: 'fv17',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Espinacas frescas',
+          marca: '',
+          formato: 'manojos',
+          precioBase: 1.1,
+        },
+        {
+          id: 'fv18',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Bolsa de ensalada',
+          marca: '',
+          formato: 'unidades',
+          precioBase: 1.99,
+        },
+        {
+          id: 'fv_mezclum',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Ensalada mezclum',
+          marca: 'Florette',
+          formato: 'bolsa',
+          precioBase: 1.99,
+        },
+        {
+          id: 'fv19',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Ajo (Normal / Negro)',
+          marca: '',
+          formato: 'dientes',
+          precioBase: 0.2,
+        },
+        {
+          id: 'fv20',
+          cat: '🍎 Frutas y Verduras',
+          nom: 'Cebolla blanca',
+          marca: '',
+          formato: 'unidades',
+          precioBase: 0.3,
+        },
+        { id: 'fv21', cat: '🍎 Frutas y Verduras', nom: 'Limón', marca: '', formato: 'unidad', precioBase: 0.35 },
+        { id: 'fv22', cat: '🍎 Frutas y Verduras', nom: 'Pepino', marca: '', formato: 'unidad', precioBase: 0.6 },
 
-            { id: 'cg1', cat: '❄️ Congelados y Bebidas', nom: 'Bolsa ensaladilla congelada', marca: 'Spar', formato: 'unidades', precioBase: 1.25 },
-            { id: 'cg2', cat: '❄️ Congelados y Bebidas', nom: 'Espinacas congeladas en porciones', marca: 'Spar', formato: '400g', precioBase: 1.40 },
-            { id: 'cg3', cat: '❄️ Congelados y Bebidas', nom: 'Brócoli congelado 30/50', marca: 'Spar', formato: '400g', precioBase: 1.40 },
-            { id: 'cg4', cat: '❄️ Congelados y Bebidas', nom: 'Hielo triturado 2kg', marca: 'Paco', formato: 'bolsas', precioBase: 1.20 },
-            { id: 'bb1', cat: '❄️ Congelados y Bebidas', nom: 'Garrafa de agua 8L', marca: '', formato: 'garrafas', precioBase: 1.15 },
-            { id: 'bb2', cat: '❄️ Congelados y Bebidas', nom: 'Bebida de almendra suprema', marca: 'Yosoy', formato: 'briks', precioBase: 1.65 },
+        {
+          id: 'lh1',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Queso Castillo gouda sin lactosa',
+          marca: 'Castillo',
+          formato: 'paquetes',
+          precioBase: 2.75,
+        },
+        {
+          id: 'lh2',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Queso fresco pajonales cabra',
+          marca: '',
+          formato: 'unidad',
+          precioBase: 3.1,
+        },
+        {
+          id: 'lh3',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Queso tierno cabra',
+          marca: '',
+          formato: 'unidad',
+          precioBase: 4.5,
+        },
+        { id: 'lh4', cat: '🥚 Lácteos y Huevos', nom: 'Queso Babybel', marca: '', formato: 'unidad', precioBase: 3.2 },
+        {
+          id: 'lh5',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Palitos La Vaca que Ríe',
+          marca: '',
+          formato: 'unidad',
+          precioBase: 2.15,
+        },
+        {
+          id: 'lh6',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Yogur Danone natural 4x120 g',
+          marca: 'Danone',
+          formato: 'packs 4 ud',
+          precioBase: 1.85,
+        },
+        {
+          id: 'lh7',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Yogur Griego Natural',
+          marca: 'Danone',
+          formato: 'packs 4x115gr',
+          precioBase: 1.85,
+        },
+        { id: 'lh8', cat: '🥚 Lácteos y Huevos', nom: 'Actimel', marca: '', formato: 'paquete', precioBase: 2.99 },
+        {
+          id: 'lh9',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Actif Kaiku bebible fresa',
+          marca: 'Kaiku',
+          formato: '6x65 ml',
+          precioBase: 2.5,
+        },
+        {
+          id: 'lh10',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Leche La Irlandesa entera 1 L',
+          marca: 'La Irlandesa',
+          formato: 'unidades',
+          precioBase: 1.15,
+        },
+        {
+          id: 'lh11',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Leche Puleva entera sin lactosa 1 L',
+          marca: 'Puleva',
+          formato: 'unidades',
+          precioBase: 1.25,
+        },
+        {
+          id: 'lh12',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Huevos camperos M (6 ud)',
+          marca: 'La Sombra',
+          formato: 'cajas',
+          precioBase: 1.95,
+        },
+        {
+          id: 'lh13',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Mantequilla premium',
+          marca: 'Irlandesa',
+          formato: 'unidad',
+          precioBase: 2.8,
+        },
+        {
+          id: 'lh14',
+          cat: '🥚 Lácteos y Huevos',
+          nom: 'Margarina',
+          marca: 'Proactiv / Flora',
+          formato: 'unidad',
+          precioBase: 3.1,
+        },
 
-            { id: 'lhg1', cat: '🧽 Limpieza e Higiene', nom: 'Jabón lavavajillas', marca: 'Fairy', formato: 'botes', precioBase: 2.99 },
-            { id: 'lhg2', cat: '🧽 Limpieza e Higiene', nom: 'Detergente lavadora marsella', marca: 'Spar', formato: 'botes', precioBase: 3.95 },
-            { id: 'lhg3', cat: '🧽 Limpieza e Higiene', nom: 'Detergente sin alérgenos', marca: 'Norit', formato: 'botes', precioBase: 5.50 },
-            { id: 'lhg4', cat: '🧽 Limpieza e Higiene', nom: 'Abrillantador lavavajillas', marca: 'Spar', formato: 'botes', precioBase: 1.45 },
-            { id: 'lhg5', cat: '🧽 Limpieza e Higiene', nom: 'Limpiador gel wc marino', marca: 'Spar', formato: 'botes', precioBase: 1.20 },
-            { id: 'lhg7', cat: '🧽 Limpieza e Higiene', nom: 'Rollo papel cocina maxi', marca: 'Spar', formato: 'packs 4ud', precioBase: 2.60 },
-            { id: 'lhg8', cat: '🧽 Limpieza e Higiene', nom: 'Papel higiénico extra suave', marca: 'Spar', formato: 'packs 24', precioBase: 4.80 },
-            { id: 'lhg9', cat: '🧽 Limpieza e Higiene', nom: 'Empacadores 60x90 (Bolsas)', marca: '', formato: 'unidades', precioBase: 2.10 },
-            { id: 'lhg10', cat: '🧽 Limpieza e Higiene', nom: 'Pañales (Talla 4 o 5)', marca: 'Wow', formato: 'paquetes', precioBase: 12.50 },
-            { id: 'lhg11', cat: '🧽 Limpieza e Higiene', nom: 'Toallitas infantiles tapa', marca: 'Spar', formato: 'packs 72 ud', precioBase: 1.15 },
-            { id: 'lhg12', cat: '🧽 Limpieza e Higiene', nom: 'Recambio maquinilla', marca: 'G.Fusion Power', formato: 'paquetes 4ud', precioBase: 18.90 },
-            { id: 'lhg13', cat: '🧽 Limpieza e Higiene', nom: 'Discos desmaquillantes', marca: '', formato: 'paquetes', precioBase: 1.05 },
-            { id: 'lhg14', cat: '🧽 Limpieza e Higiene', nom: 'Salvaslip', marca: '', formato: 'cajas', precioBase: 1.95 }
+        {
+          id: 'cp1',
+          cat: '🥩 Carnicería y Pescadería',
+          nom: 'Carne picada de primera',
+          marca: '',
+          formato: '300 g',
+          precioBase: 4.5,
+        },
+        {
+          id: 'cp2',
+          cat: '🥩 Carnicería y Pescadería',
+          nom: 'Pechuga de pollo amarillo',
+          marca: '',
+          formato: '0.2 kg',
+          precioBase: 3.9,
+        },
+        {
+          id: 'cp3',
+          cat: '🥩 Carnicería y Pescadería',
+          nom: 'Pechuga de pavo fresca al vacío en tacos',
+          marca: '',
+          formato: '0.3 kg',
+          precioBase: 4.1,
+        },
+        {
+          id: 'cp4',
+          cat: '🥩 Carnicería y Pescadería',
+          nom: 'Cinta de lomo',
+          marca: '',
+          formato: 'filetes',
+          precioBase: 3.5,
+        },
+        {
+          id: 'cp5',
+          cat: '🥩 Carnicería y Pescadería',
+          nom: 'Centro Jamón cebo ibérico 50%',
+          marca: 'Azuaga',
+          formato: '100g',
+          precioBase: 6.0,
+        },
+        {
+          id: 'cp6',
+          cat: '🥩 Carnicería y Pescadería',
+          nom: 'Pechuga de pavo NaturArte G. Reserva',
+          marca: 'Campofrío',
+          formato: '0.1 kg',
+          precioBase: 2.5,
+        },
+        {
+          id: 'cp7',
+          cat: '🥩 Carnicería y Pescadería',
+          nom: 'Mortadela',
+          marca: 'Citerio',
+          formato: '100g',
+          precioBase: 1.9,
+        },
+        {
+          id: 'cp8',
+          cat: '🥩 Carnicería y Pescadería',
+          nom: 'Corazones de Merluza sin piel',
+          marca: 'Pescanova',
+          formato: 'paquete 500gr',
+          precioBase: 5.95,
+        },
+
+        {
+          id: 'dp1',
+          cat: '🥫 Despensa',
+          nom: 'Aceitunas negras/verdes',
+          marca: 'Spar',
+          formato: 'unidad',
+          precioBase: 1.1,
+        },
+        {
+          id: 'dp3',
+          cat: '🥫 Despensa',
+          nom: 'Arroz basmati brajma 1kg',
+          marca: 'Brillante',
+          formato: 'unidades',
+          precioBase: 2.25,
+        },
+        {
+          id: 'dp4',
+          cat: '🥫 Despensa',
+          nom: 'Sal rosa del himalaya 250gr',
+          marca: 'Deleitum',
+          formato: 'unidades',
+          precioBase: 1.85,
+        },
+        {
+          id: 'dp5',
+          cat: '🥫 Despensa',
+          nom: 'Macarrones / Tornillos / Espagueti',
+          marca: 'La Isleña',
+          formato: 'unidades',
+          precioBase: 1.05,
+        },
+        {
+          id: 'dp7',
+          cat: '🥫 Despensa',
+          nom: 'Cous cous 500gr',
+          marca: 'La Isleña',
+          formato: 'unidades',
+          precioBase: 1.6,
+        },
+        {
+          id: 'dp8',
+          cat: '🥫 Despensa',
+          nom: 'Aceite de oliva suave para cocinar',
+          marca: 'Ybarra / Carbonell',
+          formato: 'botellas',
+          precioBase: 7.95,
+        },
+        {
+          id: 'dp10',
+          cat: '🥫 Despensa',
+          nom: 'Pan de molde Integral Artesanal',
+          marca: 'Panrico',
+          formato: 'unidades',
+          precioBase: 2.45,
+        },
+        {
+          id: 'dp11',
+          cat: '🥫 Despensa',
+          nom: 'Pan artesanal hogaza',
+          marca: 'Rustik Bakery',
+          formato: 'unidades',
+          precioBase: 2.15,
+        },
+        {
+          id: 'dp12',
+          cat: '🥫 Despensa',
+          nom: 'Pan de leche',
+          marca: 'La Bella Easo',
+          formato: 'paquetes',
+          precioBase: 1.85,
+        },
+        {
+          id: 'dp13',
+          cat: '🥫 Despensa',
+          nom: 'Galletas chocolate mini',
+          marca: 'Chips Ahoy',
+          formato: 'paquetes',
+          precioBase: 1.99,
+        },
+        {
+          id: 'dp14',
+          cat: '🥫 Despensa',
+          nom: 'Galleta acarameladas 250gr',
+          marca: 'Lotus',
+          formato: 'paquetes',
+          precioBase: 2.1,
+        },
+        {
+          id: 'dp15',
+          cat: '🥫 Despensa',
+          nom: 'Galletas María Oro 600gr',
+          marca: 'Cuétara',
+          formato: 'paquetes',
+          precioBase: 2.85,
+        },
+        {
+          id: 'dp22',
+          cat: '🥫 Despensa',
+          nom: 'Lentejas / Garbanzos',
+          marca: '',
+          formato: 'paquetes',
+          precioBase: 1.1,
+        },
+        {
+          id: 'dp24',
+          cat: '🥫 Despensa',
+          nom: 'Bote espárragos de navarra',
+          marca: '',
+          formato: 'botes',
+          precioBase: 3.5,
+        },
+        {
+          id: 'dp26',
+          cat: '🥫 Despensa',
+          nom: 'Tofu natural 200gr',
+          marca: 'Rikissimo',
+          formato: 'unidades',
+          precioBase: 1.8,
+        },
+        { id: 'dp27', cat: '🥫 Despensa', nom: 'Ketchup', marca: 'Heinz', formato: 'botes', precioBase: 2.5 },
+        { id: 'dp28', cat: '🥫 Despensa', nom: 'Mayonesa', marca: 'Hellmanns', formato: 'botes', precioBase: 2.95 },
+        {
+          id: 'dp30',
+          cat: '🥫 Despensa',
+          nom: 'Tarritos fruta bebé / Hero',
+          marca: 'Hero Baby',
+          formato: 'packs',
+          precioBase: 3.15,
+        },
+        {
+          id: 'dp31',
+          cat: '🥫 Despensa',
+          nom: 'Salvado De Avena crujiente',
+          marca: 'Naturtierra',
+          formato: 'bolsa',
+          precioBase: 1.95,
+        },
+        {
+          id: 'dp_crack',
+          cat: '🥫 Despensa',
+          nom: 'Crackers',
+          marca: 'Jacobson',
+          formato: 'paquetes',
+          precioBase: 1.5,
+        },
+
+        {
+          id: 'cg1',
+          cat: '❄️ Congelados y Bebidas',
+          nom: 'Bolsa ensaladilla congelada',
+          marca: 'Spar',
+          formato: 'unidades',
+          precioBase: 1.25,
+        },
+        {
+          id: 'cg2',
+          cat: '❄️ Congelados y Bebidas',
+          nom: 'Espinacas congeladas en porciones',
+          marca: 'Spar',
+          formato: '400g',
+          precioBase: 1.4,
+        },
+        {
+          id: 'cg3',
+          cat: '❄️ Congelados y Bebidas',
+          nom: 'Brócoli congelado 30/50',
+          marca: 'Spar',
+          formato: '400g',
+          precioBase: 1.4,
+        },
+        {
+          id: 'cg4',
+          cat: '❄️ Congelados y Bebidas',
+          nom: 'Hielo triturado 2kg',
+          marca: 'Paco',
+          formato: 'bolsas',
+          precioBase: 1.2,
+        },
+        {
+          id: 'bb1',
+          cat: '❄️ Congelados y Bebidas',
+          nom: 'Garrafa de agua 8L',
+          marca: '',
+          formato: 'garrafas',
+          precioBase: 1.15,
+        },
+        {
+          id: 'bb2',
+          cat: '❄️ Congelados y Bebidas',
+          nom: 'Bebida de almendra suprema',
+          marca: 'Yosoy',
+          formato: 'briks',
+          precioBase: 1.65,
+        },
+
+        {
+          id: 'lhg1',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Jabón lavavajillas',
+          marca: 'Fairy',
+          formato: 'botes',
+          precioBase: 2.99,
+        },
+        {
+          id: 'lhg2',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Detergente lavadora marsella',
+          marca: 'Spar',
+          formato: 'botes',
+          precioBase: 3.95,
+        },
+        {
+          id: 'lhg3',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Detergente sin alérgenos',
+          marca: 'Norit',
+          formato: 'botes',
+          precioBase: 5.5,
+        },
+        {
+          id: 'lhg4',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Abrillantador lavavajillas',
+          marca: 'Spar',
+          formato: 'botes',
+          precioBase: 1.45,
+        },
+        {
+          id: 'lhg5',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Limpiador gel wc marino',
+          marca: 'Spar',
+          formato: 'botes',
+          precioBase: 1.2,
+        },
+        {
+          id: 'lhg7',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Rollo papel cocina maxi',
+          marca: 'Spar',
+          formato: 'packs 4ud',
+          precioBase: 2.6,
+        },
+        {
+          id: 'lhg8',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Papel higiénico extra suave',
+          marca: 'Spar',
+          formato: 'packs 24',
+          precioBase: 4.8,
+        },
+        {
+          id: 'lhg9',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Empacadores 60x90 (Bolsas)',
+          marca: '',
+          formato: 'unidades',
+          precioBase: 2.1,
+        },
+        {
+          id: 'lhg10',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Pañales (Talla 4 o 5)',
+          marca: 'Wow',
+          formato: 'paquetes',
+          precioBase: 12.5,
+        },
+        {
+          id: 'lhg11',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Toallitas infantiles tapa',
+          marca: 'Spar',
+          formato: 'packs 72 ud',
+          precioBase: 1.15,
+        },
+        {
+          id: 'lhg12',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Recambio maquinilla',
+          marca: 'G.Fusion Power',
+          formato: 'paquetes 4ud',
+          precioBase: 18.9,
+        },
+        {
+          id: 'lhg13',
+          cat: '🧽 Limpieza e Higiene',
+          nom: 'Discos desmaquillantes',
+          marca: '',
+          formato: 'paquetes',
+          precioBase: 1.05,
+        },
+        { id: 'lhg14', cat: '🧽 Limpieza e Higiene', nom: 'Salvaslip', marca: '', formato: 'cajas', precioBase: 1.95 },
+      ];
+
+      // === ESTADO Y SALVAGUARDA ===
+      let customItems = JSON.parse(localStorage.getItem('spar_custom_items')) || [];
+      let carrito = JSON.parse(localStorage.getItem('spar_carrito')) || {};
+      let favoritos = JSON.parse(localStorage.getItem('spar_favoritos')) || [];
+      let pedidosGuardados = JSON.parse(localStorage.getItem('spar_pedidos_guardados')) || [];
+      let preciosGuardados = JSON.parse(localStorage.getItem('spar_precios')) || {};
+      let notasPedido = localStorage.getItem('spar_notas') || '';
+
+      // ESTADO DE ACORDEÓN PARA LOTES
+      let lotesExpandidos = new Set();
+
+      let savedConfig = JSON.parse(localStorage.getItem('spar_config_app')) || {};
+      let configApp = {
+        tarjeta: savedConfig.tarjeta || '',
+        cupon1: savedConfig.cupon1 || { meta: 25, descuento: 2, codigo: '1000000000003185292 3' },
+        cupon2: savedConfig.cupon2 || { meta: 85, descuento: 7, codigo: '1000000000003181436' },
+      };
+
+      if (!pedidosGuardados || pedidosGuardados.length === 0) {
+        pedidosGuardados = [
+          {
+            id: 'lote_predefinido_1',
+            nombre: '🛒 Mi Compra Habitual (Fijos)',
+            items: [
+              { id: 'fv14', cantidad: 6 },
+              { id: 'fv15', cantidad: 1 },
+              { id: 'fv8', cantidad: 4 },
+              { id: 'fv7', cantidad: 6 },
+              { id: 'fv16', cantidad: 1 },
+              { id: 'fv5', cantidad: 4 },
+              { id: 'fv1', cantidad: 1 },
+              { id: 'fv13', cantidad: 2 },
+              { id: 'fv6', cantidad: 1 },
+              { id: 'fv2', cantidad: 2 },
+              { id: 'fv12', cantidad: 5 },
+              { id: 'fv18', cantidad: 1 },
+              { id: 'lh12', cantidad: 2 },
+              { id: 'lh6', cantidad: 1 },
+              { id: 'lh11', cantidad: 1 },
+              { id: 'lh10', cantidad: 1 },
+              { id: 'lh9', cantidad: 1 },
+              { id: 'lh1', cantidad: 1 },
+              { id: 'cp3', cantidad: 1 },
+              { id: 'cp2', cantidad: 1 },
+              { id: 'cp1', cantidad: 1 },
+              { id: 'cp6', cantidad: 1 },
+              { id: 'dp10', cantidad: 1 },
+              { id: 'dp_crack', cantidad: 1 },
+            ],
+          },
         ];
+        localStorage.setItem('spar_pedidos_guardados', JSON.stringify(pedidosGuardados));
+      }
 
-        // === ESTADO Y SALVAGUARDA ===
-        let customItems = JSON.parse(localStorage.getItem('spar_custom_items')) || [];
-        let carrito = JSON.parse(localStorage.getItem('spar_carrito')) || {}; 
-        let favoritos = JSON.parse(localStorage.getItem('spar_favoritos')) || [];
-        let pedidosGuardados = JSON.parse(localStorage.getItem('spar_pedidos_guardados')) || [];
-        let preciosGuardados = JSON.parse(localStorage.getItem('spar_precios')) || {};
-        let notasPedido = localStorage.getItem('spar_notas') || "";
-        
-        // ESTADO DE ACORDEÓN PARA LOTES
-        let lotesExpandidos = new Set();
-        
-        let savedConfig = JSON.parse(localStorage.getItem('spar_config_app')) || {};
-        let configApp = {
-            tarjeta: savedConfig.tarjeta || '',
-            cupon1: savedConfig.cupon1 || { meta: 25, descuento: 2, codigo: '1000000000003185292 3' },
-            cupon2: savedConfig.cupon2 || { meta: 85, descuento: 7, codigo: '1000000000003181436' }
+      function getInventarioCompleto() {
+        return [...inventarioFijo, ...customItems];
+      }
+
+      // === SISTEMA DE MODALES Y TOAST ===
+      let accionModalPendiente = null;
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.remove('opacity-0');
+        setTimeout(() => t.classList.add('opacity-0'), 2500);
+      }
+
+      function abrirModalUI(titulo, mensaje, conInput, placeholder, callback, defaultValue = '') {
+        document.getElementById('modal-ui-title').innerText = titulo;
+        document.getElementById('modal-ui-msg').innerHTML = mensaje;
+        const input = document.getElementById('modal-ui-input');
+        if (conInput) {
+          input.classList.remove('hidden');
+          input.placeholder = placeholder || '';
+          input.value = defaultValue;
+          setTimeout(() => input.focus(), 100);
+        } else {
+          input.classList.add('hidden');
+        }
+        accionModalPendiente = callback;
+        const modal = document.getElementById('modal-ui');
+        const content = document.getElementById('modal-ui-content');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          content.classList.remove('scale-95');
+        }, 10);
+      }
+
+      function cerrarModalUI() {
+        const modal = document.getElementById('modal-ui');
+        const content = document.getElementById('modal-ui-content');
+        modal.classList.add('opacity-0');
+        content.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          accionModalPendiente = null;
+        }, 200);
+      }
+
+      document.getElementById('modal-ui-btn-confirm').onclick = () => {
+        if (accionModalPendiente) {
+          const inputVal = document.getElementById('modal-ui-input').value.trim();
+          accionModalPendiente(inputVal);
+        }
+        cerrarModalUI();
+      };
+
+      // === BÚSQUEDA Y CREACIÓN ===
+      function ejecutarBusqueda() {
+        const query = document.getElementById('buscador').value;
+        const btnClear = document.getElementById('btn-clear-search');
+        if (query.length > 0) {
+          btnClear.classList.remove('hidden');
+        } else {
+          btnClear.classList.add('hidden');
+        }
+        renderCatalogo();
+        renderFavoritos();
+        renderPedido();
+      }
+
+      function limpiarBusqueda() {
+        document.getElementById('buscador').value = '';
+        ejecutarBusqueda();
+        document.getElementById('buscador').focus();
+      }
+
+      function abrirModalNuevoArticulo() {
+        document.getElementById('nuevo-nom').value = '';
+        document.getElementById('nuevo-marca').value = '';
+        document.getElementById('nuevo-formato').value = '';
+        document.getElementById('nuevo-precio').value = '';
+        const modal = document.getElementById('modal-nuevo-articulo');
+        const content = document.getElementById('modal-nuevo-articulo-content');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          content.classList.remove('scale-95');
+        }, 10);
+      }
+
+      function cerrarModalNuevoArticulo() {
+        const modal = document.getElementById('modal-nuevo-articulo');
+        const content = document.getElementById('modal-nuevo-articulo-content');
+        modal.classList.add('opacity-0');
+        content.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 200);
+      }
+
+      function guardarNuevoArticulo() {
+        const nom = document.getElementById('nuevo-nom').value.trim();
+        const cat = document.getElementById('nuevo-cat').value;
+        const marca = document.getElementById('nuevo-marca').value.trim();
+        const formato = document.getElementById('nuevo-formato').value.trim() || 'unidades';
+        const precio = parseFloat(document.getElementById('nuevo-precio').value) || 0;
+
+        if (!nom) {
+          showToast('⚠️ El nombre es obligatorio');
+          return;
+        }
+        const nuevoId = 'custom_' + Date.now();
+        const nuevoItem = {
+          id: nuevoId,
+          cat: cat,
+          nom: nom,
+          marca: marca,
+          formato: formato,
+          precioBase: precio,
+          isCustom: true,
         };
 
-        if (!pedidosGuardados || pedidosGuardados.length === 0) {
-            pedidosGuardados = [{
-                id: 'lote_predefinido_1',
-                nombre: '🛒 Mi Compra Habitual (Fijos)',
-                items: [
-                    { id: 'fv14', cantidad: 6 }, { id: 'fv15', cantidad: 1 }, { id: 'fv8', cantidad: 4 },
-                    { id: 'fv7', cantidad: 6 }, { id: 'fv16', cantidad: 1 }, { id: 'fv5', cantidad: 4 },
-                    { id: 'fv1', cantidad: 1 }, { id: 'fv13', cantidad: 2 }, { id: 'fv6', cantidad: 1 },
-                    { id: 'fv2', cantidad: 2 }, { id: 'fv12', cantidad: 5 }, { id: 'fv18', cantidad: 1 },
-                    { id: 'lh12', cantidad: 2 }, { id: 'lh6', cantidad: 1 }, { id: 'lh11', cantidad: 1 },
-                    { id: 'lh10', cantidad: 1 }, { id: 'lh9', cantidad: 1 }, { id: 'lh1', cantidad: 1 },
-                    { id: 'cp3', cantidad: 1 }, { id: 'cp2', cantidad: 1 }, { id: 'cp1', cantidad: 1 },
-                    { id: 'cp6', cantidad: 1 }, { id: 'dp10', cantidad: 1 }, { id: 'dp_crack', cantidad: 1 }
-                ]
-            }];
-            localStorage.setItem('spar_pedidos_guardados', JSON.stringify(pedidosGuardados));
-        }
+        customItems.push(nuevoItem);
+        localStorage.setItem('spar_custom_items', JSON.stringify(customItems));
 
-        function getInventarioCompleto() { return [...inventarioFijo, ...customItems]; }
+        let precioEst =
+          preciosGuardados[nuevoItem.id] !== undefined ? preciosGuardados[nuevoItem.id] : nuevoItem.precioBase;
+        carrito[nuevoItem.id] = { ...nuevoItem, cantidad: 1, precio: precioEst };
+        guardarDatos();
+        cerrarModalNuevoArticulo();
+        actualizarBadge();
+        showToast('✨ Añadido al pedido y a la Base de Datos');
+        switchTab('pedido');
+      }
 
-        // === SISTEMA DE MODALES Y TOAST ===
-        let accionModalPendiente = null;
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.classList.remove('opacity-0');
-            setTimeout(() => t.classList.add('opacity-0'), 2500);
-        }
-
-        function abrirModalUI(titulo, mensaje, conInput, placeholder, callback, defaultValue = '') {
-            document.getElementById('modal-ui-title').innerText = titulo;
-            document.getElementById('modal-ui-msg').innerHTML = mensaje;
-            const input = document.getElementById('modal-ui-input');
-            if(conInput) {
-                input.classList.remove('hidden');
-                input.placeholder = placeholder || '';
-                input.value = defaultValue; 
-                setTimeout(() => input.focus(), 100);
-            } else { input.classList.add('hidden'); }
-            accionModalPendiente = callback;
-            const modal = document.getElementById('modal-ui');
-            const content = document.getElementById('modal-ui-content');
-            modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
-        }
-
-        function cerrarModalUI() {
-            const modal = document.getElementById('modal-ui');
-            const content = document.getElementById('modal-ui-content');
-            modal.classList.add('opacity-0'); content.classList.add('scale-95');
-            setTimeout(() => { modal.classList.add('hidden'); accionModalPendiente = null; }, 200);
-        }
-
-        document.getElementById('modal-ui-btn-confirm').onclick = () => {
-            if(accionModalPendiente) {
-                const inputVal = document.getElementById('modal-ui-input').value.trim();
-                accionModalPendiente(inputVal);
-            }
-            cerrarModalUI();
-        };
-
-        // === BÚSQUEDA Y CREACIÓN ===
-        function ejecutarBusqueda() {
-            const query = document.getElementById('buscador').value;
-            const btnClear = document.getElementById('btn-clear-search');
-            if (query.length > 0) { btnClear.classList.remove('hidden'); } else { btnClear.classList.add('hidden'); }
-            renderCatalogo(); renderFavoritos(); renderPedido();
-        }
-
-        function limpiarBusqueda() {
-            document.getElementById('buscador').value = '';
-            ejecutarBusqueda(); document.getElementById('buscador').focus();
-        }
-
-        function abrirModalNuevoArticulo() {
-            document.getElementById('nuevo-nom').value = ''; document.getElementById('nuevo-marca').value = '';
-            document.getElementById('nuevo-formato').value = ''; document.getElementById('nuevo-precio').value = '';
-            const modal = document.getElementById('modal-nuevo-articulo');
-            const content = document.getElementById('modal-nuevo-articulo-content');
-            modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
-        }
-
-        function cerrarModalNuevoArticulo() {
-            const modal = document.getElementById('modal-nuevo-articulo');
-            const content = document.getElementById('modal-nuevo-articulo-content');
-            modal.classList.add('opacity-0'); content.classList.add('scale-95');
-            setTimeout(() => { modal.classList.add('hidden'); }, 200);
-        }
-
-        function guardarNuevoArticulo() {
-            const nom = document.getElementById('nuevo-nom').value.trim();
-            const cat = document.getElementById('nuevo-cat').value;
-            const marca = document.getElementById('nuevo-marca').value.trim();
-            const formato = document.getElementById('nuevo-formato').value.trim() || 'unidades';
-            const precio = parseFloat(document.getElementById('nuevo-precio').value) || 0;
-
-            if(!nom) { showToast("⚠️ El nombre es obligatorio"); return; }
-            const nuevoId = 'custom_' + Date.now();
-            const nuevoItem = { id: nuevoId, cat: cat, nom: nom, marca: marca, formato: formato, precioBase: precio, isCustom: true };
-            
-            customItems.push(nuevoItem); localStorage.setItem('spar_custom_items', JSON.stringify(customItems));
-            
-            let precioEst = preciosGuardados[nuevoItem.id] !== undefined ? preciosGuardados[nuevoItem.id] : nuevoItem.precioBase;
-            carrito[nuevoItem.id] = { ...nuevoItem, cantidad: 1, precio: precioEst };
-            guardarDatos(); cerrarModalNuevoArticulo(); actualizarBadge();
-            showToast("✨ Añadido al pedido y a la Base de Datos");
-            switchTab('pedido');
-        }
-
-        function eliminarArticuloCustom(id) {
-            abrirModalUI("Borrar Artículo", "¿Eliminar definitivamente este artículo de tu base de datos?", false, "", () => {
-                customItems = customItems.filter(item => item.id !== id);
-                localStorage.setItem('spar_custom_items', JSON.stringify(customItems));
-                if(carrito[id]) delete carrito[id];
-                favoritos = favoritos.filter(f => f !== id);
-                guardarDatos(); renderCatalogo(); renderFavoritos(); renderPedido();
-                showToast("🗑️ Artículo eliminado");
-            });
-            event.stopPropagation();
-        }
-
-        function guardarNotas() {
-            notasPedido = document.getElementById('input-notas').value; localStorage.setItem('spar_notas', notasPedido);
-        }
-
-        // === PESTAÑAS Y DATOS NÚCLEO ===
-        function switchTab(tabName) {
-            ['catalogo', 'favoritos', 'pedido'].forEach(t => {
-                const btn = document.getElementById(`tab-${t}`);
-                if (t === tabName) btn.classList.replace('tab-inactive', 'tab-active');
-                else btn.classList.replace('tab-active', 'tab-inactive');
-                document.getElementById(`view-${t}`).classList.add('hidden'); document.getElementById(`view-${t}`).classList.remove('block');
-            });
-            document.getElementById(`view-${tabName}`).classList.remove('hidden'); document.getElementById(`view-${tabName}`).classList.add('block');
-            if (tabName === 'pedido') {
-                document.getElementById('footer-pedido').classList.remove('hidden');
-                document.getElementById('input-notas').value = notasPedido; renderPedido();
-            } else {
-                document.getElementById('footer-pedido').classList.add('hidden');
-                if (tabName === 'catalogo') renderCatalogo();
-                if (tabName === 'favoritos') renderFavoritos();
-            }
-        }
-
-        function toggleFavorito(id) {
-            if (favoritos.includes(id)) favoritos = favoritos.filter(f => f !== id); else favoritos.push(id);
-            guardarDatos(); renderCatalogo(); renderFavoritos();
-        }
-
-        function toggleCarrito(item) {
-            if (carrito[item.id]) delete carrito[item.id];
-            else {
-                let pEst = preciosGuardados[item.id] !== undefined ? preciosGuardados[item.id] : (item.precioBase || 0);
-                carrito[item.id] = { ...item, cantidad: 1, precio: pEst };
-            }
-            guardarDatos(); actualizarBadge(); renderCatalogo(); renderFavoritos(); renderPedido();
-        }
-
-        function vaciarCarrito() {
-            if(Object.keys(carrito).length === 0) return;
-            abrirModalUI("Vaciar Carrito", "¿Estás seguro de que quieres eliminar todos los productos del carrito actual?", false, "", () => {
-                carrito = {}; notasPedido = ""; document.getElementById('input-notas').value = ""; localStorage.setItem('spar_notas', "");
-                guardarDatos(); actualizarBadge(); renderPedido(); renderCatalogo(); showToast("🛒 Carrito vaciado");
-            });
-        }
-
-        function actualizarBadge() { document.getElementById('cart-badge').innerText = Object.keys(carrito).length; }
-
-        function guardarDatos() {
-            localStorage.setItem('spar_carrito', JSON.stringify(carrito));
-            localStorage.setItem('spar_favoritos', JSON.stringify(favoritos));
-            localStorage.setItem('spar_pedidos_guardados', JSON.stringify(pedidosGuardados));
-            localStorage.setItem('spar_precios', JSON.stringify(preciosGuardados));
-            actualizarTotal();
-        }
-
-        // === FUNCIONES DE EDICIÓN DE LOTES (NUEVO MOTOR) ===
-        function guardarComoLote() {
-            const keys = Object.keys(carrito);
-            if (keys.length === 0) { showToast("El carrito está vacío."); return; }
-            abrirModalUI("Guardar como Lote", "Dale un nombre a este grupo de compras:", true, "Ej: Compra de Fin de Mes", (nombre) => {
-                if(!nombre) return;
-                const itemsAguardar = keys.map(k => ({ id: k, cantidad: carrito[k].cantidad }));
-                pedidosGuardados.push({ id: Date.now().toString(), nombre: nombre, items: itemsAguardar });
-                guardarDatos(); showToast("📦 Lote guardado con éxito");
-            });
-        }
-
-        function renombrarPedidoFavorito(idPedido) {
-            const pedido = pedidosGuardados.find(p => p.id === idPedido);
-            if (!pedido) return;
-            abrirModalUI("Renombrar Lote", "Edita el nombre de este grupo de compras:", true, "Ej: Compra de Fin de Mes", (nuevoNombre) => {
-                if(!nuevoNombre || nuevoNombre.trim() === '') return;
-                pedido.nombre = nuevoNombre.trim();
-                guardarDatos(); renderFavoritos(); showToast("✏️ Nombre actualizado");
-            }, pedido.nombre);
-        }
-
-        function eliminarPedidoFavorito(idPedido) {
-            abrirModalUI("Eliminar Lote", "¿Estás seguro de que quieres borrar este lote de compras?", false, "", () => {
-                pedidosGuardados = pedidosGuardados.filter(p => p.id !== idPedido);
-                guardarDatos(); renderFavoritos(); showToast("🗑️ Lote eliminado");
-            });
-        }
-
-        function cargarPedidoFavorito(idPedido) {
-            const pedido = pedidosGuardados.find(p => p.id === idPedido);
-            if (!pedido) return;
-            const dbActual = getInventarioCompleto();
-            pedido.items.forEach(i => {
-                const pBase = dbActual.find(db => db.id === i.id);
-                if (pBase) {
-                    if (carrito[i.id]) carrito[i.id].cantidad += i.cantidad;
-                    else {
-                        let pEst = preciosGuardados[i.id] !== undefined ? preciosGuardados[i.id] : pBase.precioBase;
-                        carrito[i.id] = { ...pBase, cantidad: i.cantidad, precio: pEst };
-                    }
-                }
-            });
-            guardarDatos(); actualizarBadge(); showToast(`📦 Lote "${pedido.nombre}" volcado al carrito`);
-            switchTab('pedido'); 
-        }
-
-        function toggleDetallesLote(idPedido) {
-            if(lotesExpandidos.has(idPedido)) lotesExpandidos.delete(idPedido);
-            else lotesExpandidos.add(idPedido);
+      function eliminarArticuloCustom(id) {
+        abrirModalUI(
+          'Borrar Artículo',
+          '¿Eliminar definitivamente este artículo de tu base de datos?',
+          false,
+          '',
+          () => {
+            customItems = customItems.filter((item) => item.id !== id);
+            localStorage.setItem('spar_custom_items', JSON.stringify(customItems));
+            if (carrito[id]) delete carrito[id];
+            favoritos = favoritos.filter((f) => f !== id);
+            guardarDatos();
+            renderCatalogo();
             renderFavoritos();
-        }
+            renderPedido();
+            showToast('🗑️ Artículo eliminado');
+          },
+        );
+        event.stopPropagation();
+      }
 
-        function cambiarCantidadLote(idPedido, idItem, delta) {
-            const pedido = pedidosGuardados.find(p => p.id === idPedido);
-            if (!pedido) return;
-            const item = pedido.items.find(i => i.id === idItem);
-            if (item) {
-                item.cantidad += delta;
-                if (item.cantidad <= 0) {
-                    pedido.items = pedido.items.filter(i => i.id !== idItem);
-                }
-                guardarDatos();
-                renderFavoritos();
+      function guardarNotas() {
+        notasPedido = document.getElementById('input-notas').value;
+        localStorage.setItem('spar_notas', notasPedido);
+      }
+
+      // === PESTAÑAS Y DATOS NÚCLEO ===
+      function switchTab(tabName) {
+        ['catalogo', 'favoritos', 'pedido'].forEach((t) => {
+          const btn = document.getElementById(`tab-${t}`);
+          if (t === tabName) btn.classList.replace('tab-inactive', 'tab-active');
+          else btn.classList.replace('tab-active', 'tab-inactive');
+          document.getElementById(`view-${t}`).classList.add('hidden');
+          document.getElementById(`view-${t}`).classList.remove('block');
+        });
+        document.getElementById(`view-${tabName}`).classList.remove('hidden');
+        document.getElementById(`view-${tabName}`).classList.add('block');
+        if (tabName === 'pedido') {
+          document.getElementById('footer-pedido').classList.remove('hidden');
+          document.getElementById('input-notas').value = notasPedido;
+          renderPedido();
+        } else {
+          document.getElementById('footer-pedido').classList.add('hidden');
+          if (tabName === 'catalogo') renderCatalogo();
+          if (tabName === 'favoritos') renderFavoritos();
+        }
+      }
+
+      function toggleFavorito(id) {
+        if (favoritos.includes(id)) favoritos = favoritos.filter((f) => f !== id);
+        else favoritos.push(id);
+        guardarDatos();
+        renderCatalogo();
+        renderFavoritos();
+      }
+
+      function toggleCarrito(item) {
+        if (carrito[item.id]) delete carrito[item.id];
+        else {
+          let pEst = preciosGuardados[item.id] !== undefined ? preciosGuardados[item.id] : item.precioBase || 0;
+          carrito[item.id] = { ...item, cantidad: 1, precio: pEst };
+        }
+        guardarDatos();
+        actualizarBadge();
+        renderCatalogo();
+        renderFavoritos();
+        renderPedido();
+      }
+
+      function vaciarCarrito() {
+        if (Object.keys(carrito).length === 0) return;
+        abrirModalUI(
+          'Vaciar Carrito',
+          '¿Estás seguro de que quieres eliminar todos los productos del carrito actual?',
+          false,
+          '',
+          () => {
+            carrito = {};
+            notasPedido = '';
+            document.getElementById('input-notas').value = '';
+            localStorage.setItem('spar_notas', '');
+            guardarDatos();
+            actualizarBadge();
+            renderPedido();
+            renderCatalogo();
+            showToast('🛒 Carrito vaciado');
+          },
+        );
+      }
+
+      function actualizarBadge() {
+        document.getElementById('cart-badge').innerText = Object.keys(carrito).length;
+      }
+
+      function guardarDatos() {
+        localStorage.setItem('spar_carrito', JSON.stringify(carrito));
+        localStorage.setItem('spar_favoritos', JSON.stringify(favoritos));
+        localStorage.setItem('spar_pedidos_guardados', JSON.stringify(pedidosGuardados));
+        localStorage.setItem('spar_precios', JSON.stringify(preciosGuardados));
+        actualizarTotal();
+      }
+
+      // === FUNCIONES DE EDICIÓN DE LOTES (NUEVO MOTOR) ===
+      function guardarComoLote() {
+        const keys = Object.keys(carrito);
+        if (keys.length === 0) {
+          showToast('El carrito está vacío.');
+          return;
+        }
+        abrirModalUI(
+          'Guardar como Lote',
+          'Dale un nombre a este grupo de compras:',
+          true,
+          'Ej: Compra de Fin de Mes',
+          (nombre) => {
+            if (!nombre) return;
+            const itemsAguardar = keys.map((k) => ({ id: k, cantidad: carrito[k].cantidad }));
+            pedidosGuardados.push({ id: Date.now().toString(), nombre: nombre, items: itemsAguardar });
+            guardarDatos();
+            showToast('📦 Lote guardado con éxito');
+          },
+        );
+      }
+
+      function renombrarPedidoFavorito(idPedido) {
+        const pedido = pedidosGuardados.find((p) => p.id === idPedido);
+        if (!pedido) return;
+        abrirModalUI(
+          'Renombrar Lote',
+          'Edita el nombre de este grupo de compras:',
+          true,
+          'Ej: Compra de Fin de Mes',
+          (nuevoNombre) => {
+            if (!nuevoNombre || nuevoNombre.trim() === '') return;
+            pedido.nombre = nuevoNombre.trim();
+            guardarDatos();
+            renderFavoritos();
+            showToast('✏️ Nombre actualizado');
+          },
+          pedido.nombre,
+        );
+      }
+
+      function eliminarPedidoFavorito(idPedido) {
+        abrirModalUI('Eliminar Lote', '¿Estás seguro de que quieres borrar este lote de compras?', false, '', () => {
+          pedidosGuardados = pedidosGuardados.filter((p) => p.id !== idPedido);
+          guardarDatos();
+          renderFavoritos();
+          showToast('🗑️ Lote eliminado');
+        });
+      }
+
+      function cargarPedidoFavorito(idPedido) {
+        const pedido = pedidosGuardados.find((p) => p.id === idPedido);
+        if (!pedido) return;
+        const dbActual = getInventarioCompleto();
+        pedido.items.forEach((i) => {
+          const pBase = dbActual.find((db) => db.id === i.id);
+          if (pBase) {
+            if (carrito[i.id]) carrito[i.id].cantidad += i.cantidad;
+            else {
+              let pEst = preciosGuardados[i.id] !== undefined ? preciosGuardados[i.id] : pBase.precioBase;
+              carrito[i.id] = { ...pBase, cantidad: i.cantidad, precio: pEst };
             }
-        }
+          }
+        });
+        guardarDatos();
+        actualizarBadge();
+        showToast(`📦 Lote "${pedido.nombre}" volcado al carrito`);
+        switchTab('pedido');
+      }
 
-        // === RENDERIZADO VISUAL ===
-        function crearTarjetaProducto(item) {
-            const isFav = favoritos.includes(item.id); const inCart = !!carrito[item.id];
-            let pMostrar = preciosGuardados[item.id] !== undefined ? preciosGuardados[item.id] : (item.precioBase || 0);
-            let badgePrecio = pMostrar > 0 ? `<span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded ml-2 border border-gray-200">~${pMostrar.toFixed(2)}€</span>` : '';
-            let botonBorrarDB = item.isCustom ? `<button onclick="eliminarArticuloCustom('${item.id}')" class="text-red-300 hover:text-red-500 bg-red-50 rounded p-1 ml-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>` : '';
-            return `
+      function toggleDetallesLote(idPedido) {
+        if (lotesExpandidos.has(idPedido)) lotesExpandidos.delete(idPedido);
+        else lotesExpandidos.add(idPedido);
+        renderFavoritos();
+      }
+
+      function cambiarCantidadLote(idPedido, idItem, delta) {
+        const pedido = pedidosGuardados.find((p) => p.id === idPedido);
+        if (!pedido) return;
+        const item = pedido.items.find((i) => i.id === idItem);
+        if (item) {
+          item.cantidad += delta;
+          if (item.cantidad <= 0) {
+            pedido.items = pedido.items.filter((i) => i.id !== idItem);
+          }
+          guardarDatos();
+          renderFavoritos();
+        }
+      }
+
+      // === RENDERIZADO VISUAL ===
+      function crearTarjetaProducto(item) {
+        const isFav = favoritos.includes(item.id);
+        const inCart = !!carrito[item.id];
+        let pMostrar = preciosGuardados[item.id] !== undefined ? preciosGuardados[item.id] : item.precioBase || 0;
+        let badgePrecio =
+          pMostrar > 0
+            ? `<span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded ml-2 border border-gray-200">~${pMostrar.toFixed(2)}€</span>`
+            : '';
+        let botonBorrarDB = item.isCustom
+          ? `<button onclick="eliminarArticuloCustom('${item.id}')" class="text-red-300 hover:text-red-500 bg-red-50 rounded p-1 ml-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`
+          : '';
+        return `
                 <div class="bg-white rounded-xl shadow-sm border ${inCart ? 'border-green-500 bg-green-50' : 'border-gray-200'} p-3 flex justify-between items-center transition-all mb-2">
                     <div class="flex-1 min-w-0 pr-2 cursor-pointer" onclick='toggleCarrito(${JSON.stringify(item)})'>
                         <h3 class="font-bold text-gray-800 text-sm truncate ${inCart ? 'text-green-700' : ''}">${item.nom} ${badgePrecio}</h3>
@@ -638,57 +1575,64 @@
                         <button onclick="toggleFavorito('${item.id}')" class="p-2 rounded-full focus:outline-none"><svg class="w-6 h-6 ${isFav ? 'text-yellow-400' : 'text-gray-300'}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg></button>
                     </div>
                 </div>`;
+      }
+
+      function renderCatalogo() {
+        const container = document.getElementById('catalogo-container');
+        const filtro = document.getElementById('buscador').value.toLowerCase();
+        const categorias = {};
+
+        getInventarioCompleto().forEach((item) => {
+          const textoBusqueda = (item.nom + ' ' + (item.marca || '')).toLowerCase();
+          if (textoBusqueda.includes(filtro)) {
+            if (!categorias[item.cat]) categorias[item.cat] = [];
+            categorias[item.cat].push(item);
+          }
+        });
+
+        let html = '';
+        for (const [cat, items] of Object.entries(categorias)) {
+          html += `<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mt-4 mb-2 ml-1">${cat}</h2>`;
+          items.forEach((item) => {
+            html += crearTarjetaProducto(item);
+          });
         }
+        if (html === '')
+          html = `<div class="text-center py-10"><p class="text-gray-500">No hay productos que coincidan con "${filtro}".</p></div>`;
+        container.innerHTML = html;
+      }
 
-        function renderCatalogo() {
-            const container = document.getElementById('catalogo-container');
-            const filtro = document.getElementById('buscador').value.toLowerCase();
-            const categorias = {};
-            
-            getInventarioCompleto().forEach(item => {
-                const textoBusqueda = (item.nom + " " + (item.marca || "")).toLowerCase();
-                if (textoBusqueda.includes(filtro)) {
-                    if (!categorias[item.cat]) categorias[item.cat] = [];
-                    categorias[item.cat].push(item);
-                }
-            });
+      function renderFavoritos() {
+        const containerLotes = document.getElementById('favoritos-lotes-container');
+        const containerItems = document.getElementById('favoritos-container');
+        const filtro = document.getElementById('buscador').value.toLowerCase();
 
-            let html = '';
-            for (const [cat, items] of Object.entries(categorias)) {
-                html += `<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mt-4 mb-2 ml-1">${cat}</h2>`;
-                items.forEach(item => { html += crearTarjetaProducto(item); });
-            }
-            if (html === '') html = `<div class="text-center py-10"><p class="text-gray-500">No hay productos que coincidan con "${filtro}".</p></div>`;
-            container.innerHTML = html;
-        }
+        let lotesFiltrados = pedidosGuardados;
+        if (filtro) lotesFiltrados = pedidosGuardados.filter((p) => p.nombre.toLowerCase().includes(filtro));
 
-        function renderFavoritos() {
-            const containerLotes = document.getElementById('favoritos-lotes-container');
-            const containerItems = document.getElementById('favoritos-container');
-            const filtro = document.getElementById('buscador').value.toLowerCase();
-            
-            let lotesFiltrados = pedidosGuardados;
-            if(filtro) lotesFiltrados = pedidosGuardados.filter(p => p.nombre.toLowerCase().includes(filtro));
+        let htmlLotes = '';
+        if (lotesFiltrados.length > 0) {
+          htmlLotes += `<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mt-4 mb-3 ml-1">Tus Lotes</h2>`;
+          lotesFiltrados.forEach((p) => {
+            let isExpanded = lotesExpandidos.has(p.id);
 
-            let htmlLotes = '';
-            if(lotesFiltrados.length > 0) {
-                htmlLotes += `<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mt-4 mb-3 ml-1">Tus Lotes</h2>`;
-                lotesFiltrados.forEach(p => {
-                    let isExpanded = lotesExpandidos.has(p.id);
-                    
-                    let descItems = p.items.slice(0,3).map(i => {
-                        const base = getInventarioCompleto().find(db => db.id === i.id);
-                        return base ? base.nom : '';
-                    }).filter(Boolean).join(', ');
-                    if(p.items.length > 3) descItems += `... y ${p.items.length - 3} más`;
+            let descItems = p.items
+              .slice(0, 3)
+              .map((i) => {
+                const base = getInventarioCompleto().find((db) => db.id === i.id);
+                return base ? base.nom : '';
+              })
+              .filter(Boolean)
+              .join(', ');
+            if (p.items.length > 3) descItems += `... y ${p.items.length - 3} más`;
 
-                    // Generar HTML interno del acordeón (los controles de + y -)
-                    let innerItemsHtml = '';
-                    if (isExpanded) {
-                        p.items.forEach(i => {
-                            const base = getInventarioCompleto().find(db => db.id === i.id);
-                            if (base) {
-                                innerItemsHtml += `
+            // Generar HTML interno del acordeón (los controles de + y -)
+            let innerItemsHtml = '';
+            if (isExpanded) {
+              p.items.forEach((i) => {
+                const base = getInventarioCompleto().find((db) => db.id === i.id);
+                if (base) {
+                  innerItemsHtml += `
                                 <div class="flex justify-between items-center border-b border-indigo-100 py-2.5 last:border-0">
                                     <div class="flex-1 pr-2">
                                         <span class="text-sm font-semibold text-gray-700 leading-tight inline-block">${base.nom}</span>
@@ -699,12 +1643,13 @@
                                         <button onclick="cambiarCantidadLote('${p.id}', '${base.id}', 1)" class="w-8 h-8 rounded-md bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm active:bg-indigo-800">+</button>
                                     </div>
                                 </div>`;
-                            }
-                        });
-                        if(p.items.length === 0) innerItemsHtml = `<p class="text-xs text-gray-500 text-center py-3">Este lote está vacío.</p>`;
-                    }
+                }
+              });
+              if (p.items.length === 0)
+                innerItemsHtml = `<p class="text-xs text-gray-500 text-center py-3">Este lote está vacío.</p>`;
+            }
 
-                    htmlLotes += `
+            htmlLotes += `
                     <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-3 shadow-sm relative">
                         <div class="absolute top-3 right-3 flex space-x-2 z-10">
                             <button onclick="renombrarPedidoFavorito('${p.id}')" class="p-1.5 text-blue-400 hover:text-blue-600 bg-white rounded-md shadow-sm transition">
@@ -727,54 +1672,75 @@
                         </div>
 
                         <!-- Panel de Edición Interna -->
-                        ${isExpanded ? `
+                        ${
+                          isExpanded
+                            ? `
                         <div class="bg-white rounded-lg p-3 mb-4 shadow-inner border border-indigo-100 animate-fade-in">
                             ${innerItemsHtml}
                         </div>
-                        ` : ''}
+                        `
+                            : ''
+                        }
 
                         <button onclick="cargarPedidoFavorito('${p.id}')" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-sm shadow-md transition hover:bg-indigo-700 mt-1">
                             Volcar Lote y Revisar Pedido
                         </button>
                     </div>`;
-                });
-            }
-            containerLotes.innerHTML = htmlLotes;
+          });
+        }
+        containerLotes.innerHTML = htmlLotes;
 
-            let favItems = getInventarioCompleto().filter(item => favoritos.includes(item.id));
-            if(filtro) favItems = favItems.filter(item => (item.nom + " " + (item.marca || "")).toLowerCase().includes(filtro));
+        let favItems = getInventarioCompleto().filter((item) => favoritos.includes(item.id));
+        if (filtro)
+          favItems = favItems.filter((item) => (item.nom + ' ' + (item.marca || '')).toLowerCase().includes(filtro));
 
-            if (favItems.length === 0 && lotesFiltrados.length === 0) {
-                if(filtro) containerItems.innerHTML = `<div class="text-center py-10"><p class="text-gray-500">No hay coincidencias con "${filtro}".</p></div>`;
-                else if (pedidosGuardados.length === 0 && getInventarioCompleto().filter(item => favoritos.includes(item.id)).length === 0) containerItems.innerHTML = `<div class="text-center py-12"><p class="text-gray-500">Tus favoritos están vacíos.</p></div>`;
-                else containerItems.innerHTML = '';
-            } else if(favItems.length > 0) {
-                let htmlItems = `<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mt-4 mb-3 ml-1">Artículos Sueltos</h2>`;
-                favItems.forEach(item => { htmlItems += crearTarjetaProducto(item); });
-                containerItems.innerHTML = htmlItems;
-            } else { containerItems.innerHTML = ''; }
+        if (favItems.length === 0 && lotesFiltrados.length === 0) {
+          if (filtro)
+            containerItems.innerHTML = `<div class="text-center py-10"><p class="text-gray-500">No hay coincidencias con "${filtro}".</p></div>`;
+          else if (
+            pedidosGuardados.length === 0 &&
+            getInventarioCompleto().filter((item) => favoritos.includes(item.id)).length === 0
+          )
+            containerItems.innerHTML = `<div class="text-center py-12"><p class="text-gray-500">Tus favoritos están vacíos.</p></div>`;
+          else containerItems.innerHTML = '';
+        } else if (favItems.length > 0) {
+          let htmlItems = `<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mt-4 mb-3 ml-1">Artículos Sueltos</h2>`;
+          favItems.forEach((item) => {
+            htmlItems += crearTarjetaProducto(item);
+          });
+          containerItems.innerHTML = htmlItems;
+        } else {
+          containerItems.innerHTML = '';
+        }
+      }
+
+      function renderPedido() {
+        const container = document.getElementById('pedido-container');
+        const filtro = document.getElementById('buscador').value.toLowerCase();
+        let itemsCarrito = Object.values(carrito);
+
+        if (filtro)
+          itemsCarrito = itemsCarrito.filter((item) =>
+            (item.nom + ' ' + (item.marca || '')).toLowerCase().includes(filtro),
+          );
+
+        if (Object.keys(carrito).length === 0) {
+          container.innerHTML =
+            '<div class="text-center py-10"><p class="text-gray-500 text-lg">Tu carrito está vacío.</p></div>';
+          document.getElementById('precio-total').innerText = '0.00 €';
+          actualizarTotal();
+          return;
         }
 
-        function renderPedido() {
-            const container = document.getElementById('pedido-container');
-            const filtro = document.getElementById('buscador').value.toLowerCase();
-            let itemsCarrito = Object.values(carrito);
-            
-            if(filtro) itemsCarrito = itemsCarrito.filter(item => (item.nom + " " + (item.marca || "")).toLowerCase().includes(filtro));
+        if (itemsCarrito.length === 0 && filtro) {
+          container.innerHTML = `<div class="text-center py-10"><p class="text-gray-500">No hay productos en tu pedido que coincidan con "${filtro}".</p></div>`;
+          actualizarTotal();
+          return;
+        }
 
-            if (Object.keys(carrito).length === 0) {
-                container.innerHTML = '<div class="text-center py-10"><p class="text-gray-500 text-lg">Tu carrito está vacío.</p></div>';
-                document.getElementById('precio-total').innerText = "0.00 €"; actualizarTotal(); return;
-            }
-
-            if (itemsCarrito.length === 0 && filtro) {
-                container.innerHTML = `<div class="text-center py-10"><p class="text-gray-500">No hay productos en tu pedido que coincidan con "${filtro}".</p></div>`;
-                actualizarTotal(); return;
-            }
-
-            let html = '';
-            itemsCarrito.forEach(item => {
-                html += `
+        let html = '';
+        itemsCarrito.forEach((item) => {
+          html += `
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex-1 pr-2">
@@ -791,7 +1757,7 @@
                                 <button onclick="cambiarCantidad('${item.id}', -1)" class="w-8 h-8 rounded-full bg-white border border-gray-300 text-gray-700 flex items-center justify-center font-bold shadow-sm active:bg-gray-100">-</button>
                                 <div class="text-center">
                                     <span class="font-bold text-lg w-6 inline-block">${item.cantidad}</span>
-                                    <span class="text-[10px] text-gray-500 block -mt-1 truncate max-w-[50px] uppercase">${item.formato.substring(0,8)}</span>
+                                    <span class="text-[10px] text-gray-500 block -mt-1 truncate max-w-[50px] uppercase">${item.formato.substring(0, 8)}</span>
                                 </div>
                                 <button onclick="cambiarCantidad('${item.id}', 1)" class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold shadow-sm active:bg-blue-800">+</button>
                             </div>
@@ -805,179 +1771,246 @@
                         </div>
                     </div>
                 `;
+        });
+        container.innerHTML = html;
+        actualizarTotal();
+      }
+
+      function cambiarCantidad(id, delta) {
+        if (carrito[id]) {
+          carrito[id].cantidad += delta;
+          if (carrito[id].cantidad < 1) carrito[id].cantidad = 1;
+          guardarDatos();
+          renderPedido();
+        }
+      }
+
+      function cambiarPrecio(id, nuevoPrecio) {
+        let pNum = parseFloat(nuevoPrecio) || 0;
+        if (carrito[id]) {
+          carrito[id].precio = pNum;
+          preciosGuardados[id] = pNum;
+          guardarDatos();
+          actualizarTotal();
+        }
+      }
+
+      function actualizarTotal() {
+        let total = 0;
+        for (let key in carrito) total += carrito[key].precio * carrito[key].cantidad;
+
+        const elementTotal = document.getElementById('precio-total');
+        if (elementTotal) {
+          elementTotal.innerText = total.toFixed(2) + ' €';
+          if (total >= configApp.cupon2.meta) elementTotal.className = 'text-2xl font-black text-green-600';
+          else if (total >= configApp.cupon1.meta) elementTotal.className = 'text-2xl font-black text-yellow-600';
+          else elementTotal.className = 'text-2xl font-black text-gray-800';
+        }
+
+        const barra = document.getElementById('progreso-barra');
+        const textoProgreso = document.getElementById('progreso-texto');
+        const textoPremio = document.getElementById('progreso-premio');
+        const marcaNivel1 = document.getElementById('marca-nivel-1');
+
+        document.getElementById('texto-nivel-1').innerText =
+          `${configApp.cupon1.meta}€ (-${configApp.cupon1.descuento}€)`;
+        document.getElementById('texto-nivel-2').innerText =
+          `${configApp.cupon2.meta}€ (-${configApp.cupon2.descuento}€)`;
+
+        if (barra && textoProgreso && textoPremio && configApp.cupon2.meta > 0) {
+          let pMarca = (configApp.cupon1.meta / configApp.cupon2.meta) * 100;
+          if (marcaNivel1) marcaNivel1.style.left = `${Math.min(pMarca, 100)}%`;
+
+          let porcentaje = Math.min((total / configApp.cupon2.meta) * 100, 100);
+          barra.style.width = porcentaje + '%';
+          textoProgreso.innerText = total.toFixed(2) + '€ / ' + configApp.cupon2.meta + '€';
+
+          if (total < configApp.cupon1.meta) {
+            barra.className = 'bg-blue-500 h-2.5 rounded-full progress-bar';
+            let faltan = (configApp.cupon1.meta - total).toFixed(2);
+            textoPremio.innerHTML = `Faltan <b>${faltan}€</b> para <b>-${configApp.cupon1.descuento}€</b>`;
+            textoPremio.className = 'text-xs font-medium text-gray-600';
+          } else if (total >= configApp.cupon1.meta && total < configApp.cupon2.meta) {
+            barra.className = 'bg-yellow-500 h-2.5 rounded-full progress-bar';
+            let faltan = (configApp.cupon2.meta - total).toFixed(2);
+            textoPremio.innerHTML = `Suma <b>${faltan}€</b> más para el de <b>-${configApp.cupon2.descuento}€</b>`;
+            textoPremio.className = 'text-xs font-bold text-yellow-600';
+          } else {
+            barra.className = 'bg-green-500 h-2.5 rounded-full progress-bar';
+            textoPremio.innerHTML = `🏆 ¡Cupón <b>-${configApp.cupon2.descuento}€</b> asegurado!`;
+            textoPremio.className = 'text-xs font-black text-green-600';
+          }
+        }
+      }
+
+      // === CONFIGURACIÓN Y ENVÍOS ===
+      function abrirModalConfig() {
+        document.getElementById('input-tarjeta').value = configApp.tarjeta;
+        document.getElementById('input-meta1').value = configApp.cupon1.meta;
+        document.getElementById('input-dto1').value = configApp.cupon1.descuento;
+        document.getElementById('input-cod1').value = configApp.cupon1.codigo;
+        document.getElementById('input-meta2').value = configApp.cupon2.meta;
+        document.getElementById('input-dto2').value = configApp.cupon2.descuento;
+        document.getElementById('input-cod2').value = configApp.cupon2.codigo;
+        const modal = document.getElementById('modal-config');
+        const content = document.getElementById('modal-config-content');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          content.classList.remove('scale-95');
+        }, 10);
+      }
+
+      function cerrarModalConfig() {
+        const modal = document.getElementById('modal-config');
+        const content = document.getElementById('modal-config-content');
+        modal.classList.add('opacity-0');
+        content.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 200);
+      }
+
+      function guardarConfiguracion() {
+        configApp.tarjeta = document.getElementById('input-tarjeta').value.trim();
+        configApp.cupon1.meta = parseFloat(document.getElementById('input-meta1').value) || 25;
+        configApp.cupon1.descuento = parseFloat(document.getElementById('input-dto1').value) || 2;
+        configApp.cupon1.codigo = document.getElementById('input-cod1').value.trim();
+        configApp.cupon2.meta = parseFloat(document.getElementById('input-meta2').value) || 85;
+        configApp.cupon2.descuento = parseFloat(document.getElementById('input-dto2').value) || 7;
+        configApp.cupon2.codigo = document.getElementById('input-cod2').value.trim();
+        localStorage.setItem('spar_config_app', JSON.stringify(configApp));
+        actualizarTotal();
+        cerrarModalConfig();
+        showToast('✅ Configuración guardada');
+      }
+
+      let correoPendiente = { destino: '', asunto: '', cuerpo: '' };
+
+      function abrirModalEnviar() {
+        const modal = document.getElementById('modal-enviar');
+        const content = document.getElementById('modal-enviar-content');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          content.classList.remove('scale-95');
+        }, 10);
+      }
+      function cerrarModalEnviar() {
+        const modal = document.getElementById('modal-enviar');
+        const content = document.getElementById('modal-enviar-content');
+        modal.classList.add('opacity-0');
+        content.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 200);
+      }
+
+      function enviarPorApp() {
+        window.location.href = `mailto:${correoPendiente.destino}?subject=${correoPendiente.asunto}&body=${correoPendiente.cuerpo}`;
+        cerrarModalEnviar();
+      }
+      function enviarPorGmailWeb() {
+        const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${correoPendiente.destino}&su=${correoPendiente.asunto}&body=${correoPendiente.cuerpo}`;
+        window.open(url, '_blank');
+        cerrarModalEnviar();
+      }
+
+      function copiarComoTabla() {
+        const items = Object.values(carrito);
+        if (items.length === 0) return;
+        let tablaTSV = 'CATEGORÍA\tPRODUCTO\tMARCA\tFORMATO\tCANTIDAD\n';
+        items.forEach((item) => {
+          const marca = item.marca ? item.marca : '-';
+          const formato = item.formato ? item.formato : '-';
+          tablaTSV += `${item.cat}\t${item.nom}\t${marca}\t${formato}\t${item.cantidad}\n`;
+        });
+        if (notasPedido.trim() !== '') tablaTSV += `\nNOTAS:\t${notasPedido.trim().replace(/\n/g, ' ')}\t\t\t\n`;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(tablaTSV)
+            .then(() => {
+              cerrarModalEnviar();
+              showToast('📋 ¡Tabla copiada al portapapeles!');
+            })
+            .catch((err) => {
+              showToast('❌ Error al copiar al portapapeles.');
+              console.error('Error copiando texto: ', err);
             });
-            container.innerHTML = html; actualizarTotal();
+        } else {
+          const textareaTemp = document.createElement('textarea');
+          textareaTemp.value = tablaTSV;
+          document.body.appendChild(textareaTemp);
+          textareaTemp.select();
+          try {
+            document.execCommand('copy');
+            cerrarModalEnviar();
+            showToast('📋 ¡Tabla copiada al portapapeles!');
+          } catch (err) {
+            showToast('❌ Error al copiar.');
+          } finally {
+            document.body.removeChild(textareaTemp);
+          }
         }
+      }
 
-        function cambiarCantidad(id, delta) {
-            if(carrito[id]) {
-                carrito[id].cantidad += delta;
-                if(carrito[id].cantidad < 1) carrito[id].cantidad = 1;
-                guardarDatos(); renderPedido();
-            }
+      function generarCorreo() {
+        const items = Object.values(carrito);
+        if (items.length === 0) {
+          showToast('⚠️ El carrito está vacío.');
+          return;
         }
-
-        function cambiarPrecio(id, nuevoPrecio) {
-            let pNum = parseFloat(nuevoPrecio) || 0;
-            if(carrito[id]) {
-                carrito[id].precio = pNum; preciosGuardados[id] = pNum;
-                guardarDatos(); actualizarTotal();
-            }
+        let totalFinal = 0;
+        items.forEach((i) => (totalFinal += i.precio * i.cantidad));
+        const emailDestino = 'Luisdoreste@spargrancanaria.es';
+        const asunto = encodeURIComponent('Pedido de Compra - Spar');
+        let cuerpoCorreo = 'Hola, adjunto mi pedido de compra detallado:\n\n';
+        const categorias = {};
+        items.forEach((item) => {
+          if (!categorias[item.cat]) categorias[item.cat] = [];
+          categorias[item.cat].push(item);
+        });
+        for (const [cat, lista] of Object.entries(categorias)) {
+          cuerpoCorreo += `=== ${cat.toUpperCase()} ===\n`;
+          lista.forEach((i) => {
+            const txtMarca = i.marca ? ` (${i.marca})` : '';
+            cuerpoCorreo += `[  ] ${i.nom}${txtMarca}: ${i.cantidad} ${i.formato}\n`;
+          });
+          cuerpoCorreo += `\n`;
         }
-
-        function actualizarTotal() {
-            let total = 0;
-            for(let key in carrito) total += (carrito[key].precio * carrito[key].cantidad);
-            
-            const elementTotal = document.getElementById('precio-total');
-            if(elementTotal) {
-                elementTotal.innerText = total.toFixed(2) + " €";
-                if(total >= configApp.cupon2.meta) elementTotal.className = "text-2xl font-black text-green-600";
-                else if(total >= configApp.cupon1.meta) elementTotal.className = "text-2xl font-black text-yellow-600";
-                else elementTotal.className = "text-2xl font-black text-gray-800";
-            }
-
-            const barra = document.getElementById('progreso-barra');
-            const textoProgreso = document.getElementById('progreso-texto');
-            const textoPremio = document.getElementById('progreso-premio');
-            const marcaNivel1 = document.getElementById('marca-nivel-1');
-            
-            document.getElementById('texto-nivel-1').innerText = `${configApp.cupon1.meta}€ (-${configApp.cupon1.descuento}€)`;
-            document.getElementById('texto-nivel-2').innerText = `${configApp.cupon2.meta}€ (-${configApp.cupon2.descuento}€)`;
-
-            if (barra && textoProgreso && textoPremio && configApp.cupon2.meta > 0) {
-                let pMarca = (configApp.cupon1.meta / configApp.cupon2.meta) * 100;
-                if(marcaNivel1) marcaNivel1.style.left = `${Math.min(pMarca, 100)}%`;
-
-                let porcentaje = Math.min((total / configApp.cupon2.meta) * 100, 100);
-                barra.style.width = porcentaje + '%';
-                textoProgreso.innerText = total.toFixed(2) + '€ / ' + configApp.cupon2.meta + '€';
-                
-                if (total < configApp.cupon1.meta) {
-                    barra.className = 'bg-blue-500 h-2.5 rounded-full progress-bar';
-                    let faltan = (configApp.cupon1.meta - total).toFixed(2);
-                    textoPremio.innerHTML = `Faltan <b>${faltan}€</b> para <b>-${configApp.cupon1.descuento}€</b>`;
-                    textoPremio.className = "text-xs font-medium text-gray-600";
-                } else if (total >= configApp.cupon1.meta && total < configApp.cupon2.meta) {
-                    barra.className = 'bg-yellow-500 h-2.5 rounded-full progress-bar';
-                    let faltan = (configApp.cupon2.meta - total).toFixed(2);
-                    textoPremio.innerHTML = `Suma <b>${faltan}€</b> más para el de <b>-${configApp.cupon2.descuento}€</b>`;
-                    textoPremio.className = "text-xs font-bold text-yellow-600";
-                } else {
-                    barra.className = 'bg-green-500 h-2.5 rounded-full progress-bar';
-                    textoPremio.innerHTML = `🏆 ¡Cupón <b>-${configApp.cupon2.descuento}€</b> asegurado!`;
-                    textoPremio.className = "text-xs font-black text-green-600";
-                }
-            }
+        if (notasPedido.trim() !== '') {
+          cuerpoCorreo +=
+            '---------------------------------------\n📝 NOTAS PARA EL PREPARADOR:\n' + `${notasPedido.trim()}\n`;
         }
+        cuerpoCorreo +=
+          '---------------------------------------\n🛒 DATOS DEL CLIENTE Y PROMOCIONES:\n' +
+          `Tarjeta de Socio / Cliente: ${configApp.tarjeta ? configApp.tarjeta : '(No proporcionada)'}\n`;
+        if (totalFinal >= configApp.cupon2.meta && configApp.cupon2.codigo)
+          cuerpoCorreo += `Aplicar Cupón de Descuento (-${configApp.cupon2.descuento}€): Código ${configApp.cupon2.codigo}\n`;
+        else if (totalFinal >= configApp.cupon1.meta && configApp.cupon1.codigo)
+          cuerpoCorreo += `Aplicar Cupón de Descuento (-${configApp.cupon1.descuento}€): Código ${configApp.cupon1.codigo}\n`;
+        else cuerpoCorreo += `Promociones: (Importe mínimo para cupones no alcanzado).\n`;
+        cuerpoCorreo += '---------------------------------------\n\nQuedo a la espera de confirmación. Gracias.';
+        correoPendiente = { destino: emailDestino, asunto: asunto, cuerpo: encodeURIComponent(cuerpoCorreo) };
+        abrirModalEnviar();
+      }
 
-        // === CONFIGURACIÓN Y ENVÍOS ===
-        function abrirModalConfig() {
-            document.getElementById('input-tarjeta').value = configApp.tarjeta;
-            document.getElementById('input-meta1').value = configApp.cupon1.meta;
-            document.getElementById('input-dto1').value = configApp.cupon1.descuento;
-            document.getElementById('input-cod1').value = configApp.cupon1.codigo;
-            document.getElementById('input-meta2').value = configApp.cupon2.meta;
-            document.getElementById('input-dto2').value = configApp.cupon2.descuento;
-            document.getElementById('input-cod2').value = configApp.cupon2.codigo;
-            const modal = document.getElementById('modal-config'); const content = document.getElementById('modal-config-content');
-            modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
-        }
+      window.onload = () => {
+        actualizarBadge();
+        renderCatalogo();
+        actualizarTotal();
+      };
 
-        function cerrarModalConfig() {
-            const modal = document.getElementById('modal-config'); const content = document.getElementById('modal-config-content');
-            modal.classList.add('opacity-0'); content.classList.add('scale-95'); setTimeout(() => { modal.classList.add('hidden'); }, 200);
-        }
-
-        function guardarConfiguracion() {
-            configApp.tarjeta = document.getElementById('input-tarjeta').value.trim();
-            configApp.cupon1.meta = parseFloat(document.getElementById('input-meta1').value) || 25;
-            configApp.cupon1.descuento = parseFloat(document.getElementById('input-dto1').value) || 2;
-            configApp.cupon1.codigo = document.getElementById('input-cod1').value.trim();
-            configApp.cupon2.meta = parseFloat(document.getElementById('input-meta2').value) || 85;
-            configApp.cupon2.descuento = parseFloat(document.getElementById('input-dto2').value) || 7;
-            configApp.cupon2.codigo = document.getElementById('input-cod2').value.trim();
-            localStorage.setItem('spar_config_app', JSON.stringify(configApp)); actualizarTotal(); cerrarModalConfig(); showToast("✅ Configuración guardada");
-        }
-
-        let correoPendiente = { destino: '', asunto: '', cuerpo: '' };
-
-        function abrirModalEnviar() {
-            const modal = document.getElementById('modal-enviar'); const content = document.getElementById('modal-enviar-content');
-            modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
-        }
-        function cerrarModalEnviar() {
-            const modal = document.getElementById('modal-enviar'); const content = document.getElementById('modal-enviar-content');
-            modal.classList.add('opacity-0'); content.classList.add('scale-95'); setTimeout(() => { modal.classList.add('hidden'); }, 200);
-        }
-
-        function enviarPorApp() { window.location.href = `mailto:${correoPendiente.destino}?subject=${correoPendiente.asunto}&body=${correoPendiente.cuerpo}`; cerrarModalEnviar(); }
-        function enviarPorGmailWeb() { const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${correoPendiente.destino}&su=${correoPendiente.asunto}&body=${correoPendiente.cuerpo}`; window.open(url, '_blank'); cerrarModalEnviar(); }
-        
-        function copiarComoTabla() {
-            const items = Object.values(carrito);
-            if (items.length === 0) return;
-            let tablaTSV = "CATEGORÍA\tPRODUCTO\tMARCA\tFORMATO\tCANTIDAD\n";
-            items.forEach(item => {
-                const marca = item.marca ? item.marca : "-";
-                const formato = item.formato ? item.formato : "-";
-                tablaTSV += `${item.cat}\t${item.nom}\t${marca}\t${formato}\t${item.cantidad}\n`;
-            });
-            if (notasPedido.trim() !== "") tablaTSV += `\nNOTAS:\t${notasPedido.trim().replace(/\n/g, ' ')}\t\t\t\n`;
-            
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(tablaTSV).then(() => {
-                    cerrarModalEnviar(); showToast("📋 ¡Tabla copiada al portapapeles!");
-                }).catch(err => {
-                    showToast("❌ Error al copiar al portapapeles.");
-                    console.error('Error copiando texto: ', err);
-                });
-            } else {
-                const textareaTemp = document.createElement('textarea');
-                textareaTemp.value = tablaTSV; document.body.appendChild(textareaTemp); textareaTemp.select();
-                try { document.execCommand('copy'); cerrarModalEnviar(); showToast("📋 ¡Tabla copiada al portapapeles!"); } 
-                catch (err) { showToast("❌ Error al copiar."); } 
-                finally { document.body.removeChild(textareaTemp); }
-            }
-        }
-
-        function generarCorreo() {
-            const items = Object.values(carrito);
-            if (items.length === 0) { showToast("⚠️ El carrito está vacío."); return; }
-            let totalFinal = 0; items.forEach(i => totalFinal += (i.precio * i.cantidad));
-            const emailDestino = "Luisdoreste@spargrancanaria.es"; const asunto = encodeURIComponent("Pedido de Compra - Spar");
-            let cuerpoCorreo = "Hola, adjunto mi pedido de compra detallado:\n\n";
-            const categorias = {};
-            items.forEach(item => {
-                if (!categorias[item.cat]) categorias[item.cat] = [];
-                categorias[item.cat].push(item);
-            });
-            for (const [cat, lista] of Object.entries(categorias)) {
-                cuerpoCorreo += `=== ${cat.toUpperCase()} ===\n`;
-                lista.forEach(i => { const txtMarca = i.marca ? ` (${i.marca})` : ''; cuerpoCorreo += `[  ] ${i.nom}${txtMarca}: ${i.cantidad} ${i.formato}\n`; });
-                cuerpoCorreo += `\n`;
-            }
-            if(notasPedido.trim() !== "") { cuerpoCorreo += "---------------------------------------\n📝 NOTAS PARA EL PREPARADOR:\n" + `${notasPedido.trim()}\n`; }
-            cuerpoCorreo += "---------------------------------------\n🛒 DATOS DEL CLIENTE Y PROMOCIONES:\n" + `Tarjeta de Socio / Cliente: ${configApp.tarjeta ? configApp.tarjeta : '(No proporcionada)'}\n`;
-            if (totalFinal >= configApp.cupon2.meta && configApp.cupon2.codigo) cuerpoCorreo += `Aplicar Cupón de Descuento (-${configApp.cupon2.descuento}€): Código ${configApp.cupon2.codigo}\n`;
-            else if (totalFinal >= configApp.cupon1.meta && configApp.cupon1.codigo) cuerpoCorreo += `Aplicar Cupón de Descuento (-${configApp.cupon1.descuento}€): Código ${configApp.cupon1.codigo}\n`;
-            else cuerpoCorreo += `Promociones: (Importe mínimo para cupones no alcanzado).\n`;
-            cuerpoCorreo += "---------------------------------------\n\nQuedo a la espera de confirmación. Gracias.";
-            correoPendiente = { destino: emailDestino, asunto: asunto, cuerpo: encodeURIComponent(cuerpoCorreo) };
-            abrirModalEnviar();
-        }
-
-        window.onload = () => { actualizarBadge(); renderCatalogo(); actualizarTotal(); };
-
-
-        // === REGISTRO SERVICE WORKER (PWA OFFLINE-FIRST) ===
-        if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/compra_spar/service-worker.js')
-      .then(reg => console.log('SW registrado con éxito', reg))
-      .catch(err => console.error('Error al registrar SW', err));
-  });
-        }
+      // === REGISTRO SERVICE WORKER (PWA OFFLINE-FIRST) ===
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/compra_spar/service-worker.js')
+            .then((reg) => console.log('SW registrado con éxito', reg))
+            .catch((err) => console.error('Error al registrar SW', err));
+        });
+      }
     </script>
-</body>
+  </body>
 </html>
